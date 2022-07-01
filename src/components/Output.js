@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from 'antd';
 import axios from 'axios';
-import { useState } from 'react';
 // import output from "../../../output.json";
 import { createRequest, headerInfo, createPublishRequest } from '../util/util';
 

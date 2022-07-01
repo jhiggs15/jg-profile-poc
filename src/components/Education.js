@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-import { useState } from "react";
 import { Col, Row, Select, Input } from "antd";
 import { nanoid } from "nanoid";
 import {inputData} from "../inputData"
