@@ -10,11 +10,28 @@ import { Button, Modal, Layout, Steps } from 'antd';
 import { ScissorOutlined } from '@ant-design/icons';
 import { inputData } from '../../inputData';
 import { ChooseDataForTemplate } from '../Modal/ChooseDataForTemplate/ChooseDataForTemplate';
+import { GeneratePDF } from '../Modal/GeneratePDF/GeneratePDF';
+import { templateInfo } from '../../util/util';
+
+
+const createDraftDocument = () => {
+  axios
+    .post('https://api.pdfmonkey.io/api/v1/documents', templateInfo(), {
+      headers: headerInfo,
+    })
+    .then((result) => {
+      setDocumentID(result.data.document.id);
+      navigate('/info');
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
 
 
 
 export const CreateProfile = (props) => {
-
+    const documentPersonNameHook = useState()
     const nameHook = useState(inputData.name);
     const titleHook = useState(inputData.tense_title);
     const bioHook = useState(inputData.biography);
@@ -30,9 +47,20 @@ export const CreateProfile = (props) => {
 
     const renderStep = () => {
         const steps = [
-        <Setup tokenHook={tokenHook} templateIDHook={templateIDHook} />,
+        <Setup tokenHook={tokenHook} templateIDHook={templateIDHook} nameHook={documentPersonNameHook} />,
         <ChooseDataForTemplate />,
-        // <GeneratePDF />,
+        <GeneratePDF 
+            nameHook={nameHook}
+            titleHook={titleHook}
+            bioHook={bioHook}
+            eduHook={eduHook}
+            expHook={expHook}
+            skillsHook={skillsHook}
+            tokenHook={tokenHook}
+            templateIDHook={templateIDHook}
+            documentIDHook={documentIDHook}
+            documentPersonNameHook={documentPersonNameHook}
+         />,
         ];
   
         return (
@@ -40,10 +68,27 @@ export const CreateProfile = (props) => {
             {steps[stepValue]}
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             {stepValue != 0 ? (
-                <Button onClick={() => setStepValue(stepValue - 1)}>Back </Button>
+                <Button 
+                  onClick={() => {
+                    setStepValue(stepValue - 1)
+                    
+                  }}
+                >
+                    Back
+                </Button>
             ) : null}
             {stepValue < 2 ? (
-                <Button onClick={() => setStepValue(stepValue + 1)}>Next </Button>
+                <Button 
+                onClick={() => {
+                  // if(stepValue == 0) {
+                  //   createDraftDocument()
+                  // }
+                  setStepValue(stepValue + 1)
+                  
+                }}
+                >
+                  Next 
+                </Button>
             ) : (
                 <Button> Download PDF </Button>
             )}

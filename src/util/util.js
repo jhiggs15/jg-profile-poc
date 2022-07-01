@@ -1,8 +1,13 @@
-export const templateInfo = {
-  document: {
-    document_template_id: '35A8E8B5-3CC2-43CF-B4DB-F8E139031518',
-    meta: { _filename: 'some-custom-name.pdf' },
-  },
+export const templateInfo = (tempalteID, name) => {
+  return (
+    {
+      document: {
+        document_template_id: tempalteID,
+        meta: { _filename: name + " profile-poc" },
+      }
+    }
+  )
+
 };
 
 // UPDATING PDF template or file name causes preview url to error temporarily
