@@ -1,13 +1,10 @@
 export const templateInfo = (tempalteID, name) => {
-  return (
-    {
-      document: {
-        document_template_id: tempalteID,
-        meta: { _filename: name + " profile-poc" },
-      }
-    }
-  )
-
+  return {
+    document: {
+      document_template_id: tempalteID,
+      meta: { _filename: name + ' profile-poc' },
+    },
+  };
 };
 
 // UPDATING PDF template or file name causes preview url to error temporarily
@@ -22,7 +19,7 @@ export const createRequest = (data) => {
 export const createPublishRequest = () => {
   return {
     document: {
-      status: "pending",
+      status: 'pending',
     },
   };
 };

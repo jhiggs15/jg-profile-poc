@@ -1,7 +1,5 @@
 import { gql } from '@apollo/client';
 
-
-
 export const getUser = gql`
 query ExampleQuery($personEmail: String, $personName: String ) {
     people(where: { email:$personEmail , OR:{name: $personName }}) {
