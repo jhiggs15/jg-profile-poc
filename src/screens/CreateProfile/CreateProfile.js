@@ -72,20 +72,17 @@ export const CreateProfile = (props) => {
           {stepValue < 2 ? (
             <Button
               onClick={() => {
-                // if (stepValue == 0) {
-                //   createDraftDocument();
-                // }
+                if (stepValue == 0) {
+                  createDraftDocument();
+                }
                 setStepValue(stepValue + 1);
               }}
             >
               Next
             </Button>
-          ) : (
-            <Button> Download PDF </Button>
-          )}
+          ) : null}
         </div>
         {steps[stepValue]}
-
       </>
     );
   };
@@ -98,6 +95,7 @@ export const CreateProfile = (props) => {
           alignItems: 'center',
           display: 'flex',
           flexDirection: 'column',
+          height: '10vh',
         }}
       >
         <Steps current={stepValue} style={{ justifyContent: 'center' }}>
@@ -109,7 +107,7 @@ export const CreateProfile = (props) => {
           <Steps.Step title="Generate PDF" icon={<ScissorOutlined />} />
         </Steps>
       </div>
-      {renderStep(stepValue)}
+      <div style={{ height: '90vh' }}>{renderStep(stepValue)}</div>
     </>
   );
 };

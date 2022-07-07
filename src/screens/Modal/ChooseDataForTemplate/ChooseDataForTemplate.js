@@ -183,10 +183,14 @@ export const ChooseDataForTemplate = (props) => {
   const [draggedTreeNode, setDraggedTreeNode] = useState();
   const [draggedJSONNode, setDraggedJSONNode] = useState();
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const [focusedTemplateField, setFocusedTemplateField] = useState();
-  const [focusedTemplateSection, setFocusedTemplateSection] = useState();
+  const [focusedThing, setFocusedThing] = useState({
+    field: '',
+    sectionTitle: '',
+    sectionType: '',
+  });
   const templateSchema = processTemplateStructure(templateStructure);
   const [sectionStates, setSectionStates] = sectionStateHook;
+
 
   // change this to take in section type with optional index param
   const handleFieldChange = (
@@ -198,19 +202,32 @@ export const ChooseDataForTemplate = (props) => {
   ) => {
     if (sectionType == 'ArraySection') {
       let arraySection = sectionStates[sectionName];
-      if (!Array.isArray(arraySection)) arraySection = [];
-      arraySection[index] = { ...arraySection[index], [fieldName]: value };
+      if(!Array.isArray(arraySection)) arraySection = []
+      else {
+        arraySection[index] = { ...arraySection[index], [fieldName]: value };
+        setSectionStates({
+          ...sectionStates,
+          [sectionName]: arraySection,
+        });
+      }
+      // if (!Array.isArray(arraySection)) arraySection = [];
 
-      setSectionStates({
-        ...sectionStates,
-        [sectionName]: arraySection,
-      });
     } else {
       setSectionStates({
         ...sectionStates,
         [sectionName]: { ...sectionStates[sectionName], [fieldName]: value },
       });
     }
+  };
+  
+  const addArrayItem = (sectionName, value) => {
+    let arraySection = sectionStates[sectionName];
+    if(!Array.isArray(arraySection)) arraySection = []
+    arraySection.push(value)
+    setSectionStates({
+      ...sectionStates,
+      [sectionName]: arraySection
+    });
   };
 
   const removeArrayItem = (sectionName, index) => {
@@ -222,23 +239,65 @@ export const ChooseDataForTemplate = (props) => {
     });
   };
 
+  const getSection = (sectionName) => {
+    return sectionStates[sectionName];
+  };
   // take in section type with optional
-  const getField = (fieldName, sectionName) => {
-    if (sectionStates[sectionName])
-      return sectionStates[sectionName][fieldName];
+  const getField = (fieldName, sectionName, index) => {
+    if (typeof sectionStates[sectionName] != 'undefined') {
+      if (Number.isInteger(index))
+        return sectionStates[sectionName][index][fieldName];
+      else return sectionStates[sectionName][fieldName];
+    }
+
     return null;
   };
 
-  const createSections = (schema, sectionStates) => {
+  const getTemplateItem = (schema, focusedThing) => {
+    let foundSection = schema.find(
+      (item) =>
+        item.title == focusedThing.sectionTitle &&
+        item.type == focusedThing.sectionType
+    );
+    if (focusedThing.field != '') {
+      let copyOfFoundSection = { ...foundSection };
+      const templateItem = copyOfFoundSection.children.find(
+        (item) => item.title == focusedThing.field
+      );
+
+      if (focusedThing.sectionType == 'ArraySection') {
+        copyOfFoundSection.children = [];
+        const section = getSection(focusedThing.sectionTitle);
+        if (Array.isArray(section)) {
+          section.forEach((item) => {
+            copyOfFoundSection.children.push(templateItem);
+          });
+        } else copyOfFoundSection.children.push(templateItem);
+      } else copyOfFoundSection.children = [templateItem];
+      return typeof copyOfFoundSection == 'undefined'
+        ? []
+        : [copyOfFoundSection];
+    }
+
+
+    // changed to return not children
+    return typeof foundSection == 'undefined' ? [] : foundSection;
+  };
+
+
+  const createSections = (schema) => {
+    if (typeof schema == 'undefined') return;
+    if(!Array.isArray(schema)) schema = [schema]
     return schema.map((item, index) => {
       if (item.type == 'ArraySection') {
         return (
           <ArraySection
             title={item.title}
             schema={{ ...item.children[0] }}
-            children={item.children}
+            children={getSection(item.title) ?? []}
             handleFieldChange={handleFieldChange}
             getItem={getField}
+            addArrayItem={addArrayItem}
             removeArrayItem={removeArrayItem}
             index={index}
             draggedJSONNode={draggedJSONNode}
@@ -260,62 +319,71 @@ export const ChooseDataForTemplate = (props) => {
       }
     });
   };
-  const triggerPopup = (title, sectionTitle) => {
+  const triggerPopup = (title, sectionTitle, sectionType) => {
     setPopupVisible(true);
-    setFocusedTemplateField(title);
-    setFocusedTemplateSection(sectionTitle);
+    const focusedObject = {
+      field: title,
+      sectionTitle: sectionTitle,
+      sectionType,
+    };
+    setFocusedThing(focusedObject);
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        paddingTop: 10,
-        paddingBottom: 10,
-      }}
-    >
-      <Tree
-        draggable
-        onDragStart={({ event, node }) => {
-          setDraggedTreeNode(node);
-          setDraggedJSONNode(treeToJSON(node, inputData, node.title));
-        }}
-        treeData={queryToTree(getUser)}
-      />
-      <Modal
-        width={'auto'}
-        bodyStyle={{ height: '70vh', overflow: 'scroll' }}
-        onCancel={() => setPopupVisible(false)}
-        visible={isPopupVisible}
-        footer={null}
-      >
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
-          {Array.isArray(draggedJSONNode) &&
-          Array.isArray(draggedJSONNode[0]) ? (
-            <Table
-              columns={treeNodeToColumn(draggedTreeNode)}
-              dataSource={draggedJSONNode.flat()}
-            />
-          ) : (
-            <Table
-              columns={treeNodeToColumn(draggedTreeNode)}
-              dataSource={draggedJSONNode}
-            />
-          )}
-          <Field
-            draggedJSONNode={draggedJSONNode}
-            title={focusedTemplateField}
-            field={getField(focusedTemplateField, focusedTemplateSection)}
-            handleFieldChange={(fieldName, value) =>
-              handleFieldChange(fieldName, focusedTemplateSection, value)
-            }
-            triggerPopup={() => null}
-          />
-        </div>
-      </Modal>
-      <div>{createSections(templateSchema, sectionStates)}</div>
+    <div>
       {JSON.stringify(sectionStates)}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          paddingTop: 10,
+          paddingBottom: 10,
+          height: '85vh',
+        }}
+      >
+        <Tree
+          draggable
+          style={{ height: '100%', overflow: 'scroll' }}
+          onDragStart={({ event, node }) => {
+            setDraggedTreeNode(node);
+            setDraggedJSONNode(treeToJSON(node, inputData, node.title));
+          }}
+          treeData={queryToTree(getUser)}
+        />
+        <Modal
+          width={'auto'}
+          bodyStyle={{ height: '70vh', overflow: 'scroll' }}
+          onCancel={() => setPopupVisible(false)}
+          visible={isPopupVisible}
+          footer={null}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {Array.isArray(draggedJSONNode) &&
+            Array.isArray(draggedJSONNode[0]) ? (
+              <Table
+                style={{ height: '30vh', marginBottom: 20 }}
+                scroll={{ y: '20vh' }}
+                columns={treeNodeToColumn(draggedTreeNode)}
+                dataSource={draggedJSONNode.flat()}
+              />
+            ) : (
+              <Table
+                style={{ maxHeight: '30vh', marginBottom: 20 }}
+                scroll={{ y: '20vh' }}
+                columns={treeNodeToColumn(draggedTreeNode)}
+                dataSource={draggedJSONNode}
+              />
+            )}
+            <div style={{ height: '30vh', overflow: 'scroll' }}>
+              {createSections(
+                getTemplateItem(templateSchema, focusedThing), true)}
+            </div>
+          </div>
+        </Modal>
+        <div style={{ overflow: 'scroll', height: '100%' }}>
+          {createSections(templateSchema)}
+        </div>
+      </div>
     </div>
   );
 };

@@ -23,6 +23,7 @@ export function GeneratePDF(props) {
   const [token] = tokenHook;
   const [documentPersonName] = documentPersonNameHook;
 
+  const [isLoading, setIsLoadng] = useState(false)
   const [previewURL, setPreviewURL] = previewURLHook;
   const [updateTime, setUpdateTime] = useState();
 
@@ -52,12 +53,12 @@ export function GeneratePDF(props) {
     // axios.get(`https://api.pdfmonkey.io/api/v1/documents/${documentID}`, {
     axios
       .put(
-        `https://api.pdfmonkey.io/api/v1/documents/7BCC76B7-4BF8-4CCC-B27C-341003204194`,
+        `https://api.pdfmonkey.io/api/v1/documents/${documentID}`,
         createPublishRequest(),
         createHeaderInfo(token)
       )
       .then((result) => {
-        const lastGenerationLog = result.data.document.generation_logs.at(-1);
+        const lastGenerationLog = result.data.document.generation_logs.at(-1) ?? {timestamp: 0};
         if (new Date(updateTime) <= new Date(lastGenerationLog.timestamp))
           window.open(result.data.document.download_url);
         else {
@@ -81,8 +82,15 @@ export function GeneratePDF(props) {
       ) : (
         <>
           <iframe src={previewURL} />
-          <Button onClick={requestPDFOnClick}>Update PDF</Button>
-          <Button onClick={createDownloadLink}>Download PDF</Button>
+          {isLoading ?
+            <p>Loading...</p>
+            :
+            <> 
+              <Button onClick={requestPDFOnClick}>Update PDF</Button>
+              <Button onClick={createDownloadLink}>Download PDF</Button>
+            </>
+          }
+
         </>
       )}
     </div>

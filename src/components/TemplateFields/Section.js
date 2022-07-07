@@ -4,15 +4,16 @@ import { Button } from 'antd';
 
 const createFields = (
   children,
+  schema,
   draggedJSONNode,
   triggerPopupSection,
   sectionTitle,
+  sectionType,
   handleFieldChange,
   getItem
 ) => {
   return children.map((arrayItem, index) => {
     const handleFieldChangeNew = (fieldName, value) => {
-      console.log(fieldName);
       handleFieldChange(fieldName, value, index);
     };
 
@@ -20,8 +21,12 @@ const createFields = (
       <Field
         triggerPopup={triggerPopupSection}
         draggedJSONNode={draggedJSONNode}
-        title={arrayItem.title}
-        field={getItem(arrayItem.title, sectionTitle)}
+        title={sectionType == 'ArraySection'? schema.title : arrayItem.title}
+        field={
+          sectionType == 'ArraySection'
+            ? getItem(schema.title, sectionTitle, index)
+            : getItem(arrayItem.title, sectionTitle)
+        }
         handleFieldChange={handleFieldChangeNew}
       />
     );
@@ -37,45 +42,49 @@ export const ArraySection = ({
   handleFieldChange,
   draggedJSONNode,
   triggerPopup,
+  addArrayItem
 }) => {
-  const [allChildren, setAllChildren] = useState(children);
-
   const handleFieldChangeSection = (fieldName, value, index) => {
     handleFieldChange(fieldName, title, value, 'ArraySection', index);
   };
 
   const triggerPopupSection = (fieldName) => {
-    triggerPopup(fieldName, title);
+    triggerPopup(fieldName, title, 'ArraySection');
   };
 
   const addItem = () => {
-    setAllChildren([...allChildren, { ...schema }]);
+    addArrayItem(title, {[schema.title]: ""})
   };
 
   const removeLast = () => {
-    removeArrayItem(title, allChildren.length - 1);
-    const newChildren = [...allChildren];
-    newChildren.pop();
-    setAllChildren([...newChildren]);
+    removeArrayItem(title, children.length - 1);
   };
 
   return (
-    <>
-      <h1>{title}</h1>
+    <div>
+      <h1
+        onDragLeave={() => {
+          if(Array.isArray(draggedJSONNode)) triggerPopupSection("")
+        }}
+      >
+        {title}
+      </h1>
       {createFields(
-        allChildren,
+        children,
+        schema,
         draggedJSONNode,
-        triggerPopupSection,
+        () => 1,
         title,
+        'ArraySection',
         handleFieldChangeSection,
         getItem
       )}
-      {allChildren.length > 0 ? (
+      {children.length > 0 ? (
         <Button onClick={removeLast}>Remove Last</Button>
       ) : null}
 
       <Button onClick={addItem}>Create Item</Button>
-    </>
+    </div>
   );
 };
 
@@ -91,17 +100,25 @@ export const ParentSection = ({
     handleFieldChange(fieldName, title, value);
 
   const triggerPopupSection = (fieldName) => {
-    triggerPopup(fieldName, title);
+    triggerPopup(fieldName, title, 'ParentSection');
   };
 
   return (
     <>
-      <h1>{title}</h1>
+      <h1
+        onDragLeave={() => {
+          if(Array.isArray(draggedJSONNode)) triggerPopupSection("")
+        }}
+      >
+        {title}
+      </h1>
       {createFields(
         children,
+        "",
         draggedJSONNode,
         triggerPopupSection,
         title,
+        'ParentSection',
         handleFieldChangeSection,
         getItem
       )}

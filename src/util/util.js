@@ -2,7 +2,7 @@ export const createTemplateInfo = (tempalteID, name) => {
   return {
     document: {
       document_template_id: tempalteID,
-      meta: { _filename: name },
+      meta: { _filename: 'Profile-POC' },
     },
   };
 };
