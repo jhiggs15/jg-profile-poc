@@ -2,7 +2,13 @@ import { Tree, Modal, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getUser, test } from '../../../getUserQuery';
 import { inputData } from '../../../inputData';
+import { templateStructure } from '../../../templateStructure';
 import { Field } from '../../../components/TemplateFields/Field';
+import { ArrayField } from '../../../components/TemplateFields/ArrayField';
+import {
+  ArraySection,
+  ParentSection,
+} from '../../../components/TemplateFields/Section';
 
 const isObject = (item) => typeof item == 'object' && item !== null;
 
@@ -146,33 +152,76 @@ const treeNodeToColumnRecursive = (tree, columns, path) => {
   }
 };
 
+const processTemplateStructure = (template) => {
+  const schema = [];
+  for (let curKey of Object.keys(template)) {
+    const data = template[curKey];
+    let schemaItem = { title: curKey };
+    if (Array.isArray(template[curKey])) {
+      schemaItem['type'] = 'ArraySection';
+      schemaItem['children'] = processTemplateStructure(data[0]);
+      schema.push(schemaItem);
+    } else if (isObject(data)) {
+      schemaItem['type'] = 'ParentSection';
+      schemaItem['children'] = processTemplateStructure(data);
+      schema.push(schemaItem);
+    } else {
+      schemaItem['type'] = 'Item';
+      schema.push(schemaItem);
+    }
+  }
+  return schema;
+};
+
 export const ChooseDataForTemplate = (props) => {
   // Tree Component on Left hand sign with labels for the data
   // You can view the data by hovering over it
   // on the right hand side have inputs for each of the required template names
   // drag item from one side to the other
 
+  const { sectionStateHook } = props;
   const [draggedTreeNode, setDraggedTreeNode] = useState();
   const [draggedJSONNode, setDraggedJSONNode] = useState();
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const [focusedIndex, setFocusedIndex] = useState();
-  const treeData = queryToTree(getUser);
-  const templateSchema = [{ title: 'Field', type: 'Single' }];
-  const fieldStates = templateSchema.map(() => useState());
+  const [focusedTemplateField, setFocusedTemplateField] = useState();
+  const [focusedTemplateSection, setFocusedTemplateSection] = useState();
+  const templateSchema = processTemplateStructure(templateStructure);
+  const [sectionStates, setSectionStates] = sectionStateHook;
 
-  const triggerPopup = (index) => {
-    setPopupVisible(true);
-    setFocusedIndex(index);
+  const handleFieldChange = (fieldName, sectionName, value) => {
+    setSectionStates({
+      ...sectionStates,
+      [sectionName]: { ...sectionStates[sectionName], [fieldName]: value },
+    });
   };
 
-  const fields = templateSchema.map((item, index) => (
-    <Field
-      title={item.title}
-      fieldHook={fieldStates[index]}
-      draggedNodeJSON={draggedJSONNode}
-      triggerPopup={() => triggerPopup(index)}
-    />
-  ));
+  const getField = (fieldName, sectionName) => {
+    if (sectionStates[sectionName] )
+      
+      return sectionStates[sectionName][fieldName];
+    return null;
+  };
+
+  const createSections = (schema, sectionStates) => {
+    return schema.map((item, index) => {
+      return (
+        <ArraySection
+          title={item.title}
+          children={item.children}
+          handleFieldChange={handleFieldChange}
+          getItem={getField}
+          index={index}
+          draggedJSONNode={draggedJSONNode}
+          triggerPopup={triggerPopup}
+        />
+      );
+    });
+  };
+  const triggerPopup = (title, sectionTitle) => {
+    setPopupVisible(true);
+    setFocusedTemplateField(title);
+    setFocusedTemplateSection(sectionTitle);
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -182,7 +231,7 @@ export const ChooseDataForTemplate = (props) => {
           setDraggedTreeNode(node);
           setDraggedJSONNode(treeToJSON(node, inputData, node.title));
         }}
-        treeData={treeData}
+        treeData={queryToTree(getUser)}
       />
       <Modal
         width={'auto'}
@@ -212,11 +261,19 @@ export const ChooseDataForTemplate = (props) => {
               dataSource={draggedJSONNode}
             />
           )}
-
-          {fields[focusedIndex]}
+          <Field
+            draggedJSONNode={draggedJSONNode}
+            title={focusedTemplateField}
+            field={getField(focusedTemplateField, focusedTemplateSection)}
+            handleFieldChange={(fieldName, value) =>
+              handleFieldChange(fieldName, focusedTemplateSection, value)
+            }
+            triggerPopup={() => null}
+          />
         </div>
       </Modal>
-      <div>{fields}</div>
+      <div>{createSections(templateSchema, sectionStates)}</div>
+      {JSON.stringify(sectionStates)}
     </div>
   );
 };

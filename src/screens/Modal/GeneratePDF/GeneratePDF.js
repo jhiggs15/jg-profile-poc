@@ -1,46 +1,30 @@
 import React, { useState } from 'react';
 import { Button } from 'antd';
 import axios from 'axios';
-import { createPublishRequest, createRequest } from '../../../util/util';
+import {
+  createPublishRequest,
+  createRequest,
+  createHeaderInfo,
+} from '../../../util/util';
 // import output from "../../../output.json";
 
 export function GeneratePDF(props) {
   const {
-    nameHook,
-    titleHook,
-    bioHook,
-    eduHook,
-    expHook,
-    skillsHook,
-    documentIDHook,
-    templateIDHook,
+    sectionStateHook,
     tokenHook,
-    documentPersonNameHook
+    templateIDHook,
+    documentIDHook,
+    documentPersonNameHook,
+    previewURLHook,
   } = props;
-  const [name] = nameHook;
-  const [title] = titleHook;
-  const [bio] = bioHook;
-  const [edu] = eduHook;
-  const [exp] = expHook;
-  const [skills] = skillsHook;
+  const [sectionState] = sectionStateHook;
   const [documentID] = documentIDHook;
-  const [templateID] = templateIDHook
-  const [token] = tokenHook
-  const [documentPersonName] = documentPersonNameHook
+  const [templateID] = templateIDHook;
+  const [token] = tokenHook;
+  const [documentPersonName] = documentPersonNameHook;
 
-  const [previewURL, setPreviewURL] = useState('');
+  const [previewURL, setPreviewURL] = previewURLHook;
   const [updateTime, setUpdateTime] = useState();
-
-  const data = {
-    userinfo: {
-      name: name,
-      title: title,
-      funfact: bio,
-    },
-    education: edu,
-    experience: exp,
-    skills1: skills,
-  };
 
   const requestPDFOnClick = async () => {
     // axios.get(`https://api.pdfmonkey.io/api/v1/documents/${documentID}`, {
@@ -50,9 +34,9 @@ export function GeneratePDF(props) {
     setUpdateTime(dateNow.toISOString());
     axios
       .put(
-        `https://api.pdfmonkey.io/api/v1/documents/7BCC76B7-4BF8-4CCC-B27C-341003204194`,
-        createRequest(data),
-        headerInfo
+        `https://api.pdfmonkey.io/api/v1/documents/${documentID}`,
+        createRequest(sectionState),
+        createHeaderInfo(token)
       )
       .then((result) => {
         setPreviewURL(result.data.document.preview_url);
@@ -70,7 +54,7 @@ export function GeneratePDF(props) {
       .put(
         `https://api.pdfmonkey.io/api/v1/documents/7BCC76B7-4BF8-4CCC-B27C-341003204194`,
         createPublishRequest(),
-        headerInfo
+        createHeaderInfo(token)
       )
       .then((result) => {
         const lastGenerationLog = result.data.document.generation_logs.at(-1);

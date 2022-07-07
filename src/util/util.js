@@ -1,8 +1,8 @@
-export const templateInfo = (tempalteID, name) => {
+export const createTemplateInfo = (tempalteID, name) => {
   return {
     document: {
       document_template_id: tempalteID,
-      meta: { _filename: name + ' profile-poc' },
+      meta: { _filename: name },
     },
   };
 };
@@ -24,9 +24,11 @@ export const createPublishRequest = () => {
   };
 };
 
-export const headerInfo = {
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: 'Bearer RWKT_XJherzUoV3cDYyx',
-  },
+export const createHeaderInfo = (token) => {
+  return {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  };
 };
