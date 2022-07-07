@@ -7,10 +7,12 @@
     "@apollo/client": "^3.6.9",
     "antd": "4.21.4",
     "axios": "0.27.2",
-    "nanoid": "4.0.0",
+    "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0",
+    "graphql-ws": "^5.5.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "6.3.0"
+    "recoil": "^0.7.4",
+    "subscriptions-transport-ws": "^0.9.0 || ^0.11.0"
   },
   "scripts": {
     "start": "react-scripts start",

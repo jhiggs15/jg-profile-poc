@@ -6,25 +6,25 @@ import {
   createRequest,
   createHeaderInfo,
 } from '../../util/PDFMonkeyUtil';
-// import output from "../../../output.json";
+import { useRecoilValue, useRecoilState } from 'recoil';
+import {
+  sectionStateHook,
+  nameHook,
+  tokenHook,
+  templateIDHook,
+  documentIDHook,
+  previewURLHook,
+} from '../../util/Atoms';
 
 export function GeneratePDF(props) {
-  const {
-    sectionStateHook,
-    tokenHook,
-    templateIDHook,
-    documentIDHook,
-    documentPersonNameHook,
-    previewURLHook,
-  } = props;
-  const [sectionState] = sectionStateHook;
-  const [documentID] = documentIDHook;
-  const [templateID] = templateIDHook;
-  const [token] = tokenHook;
-  const [documentPersonName] = documentPersonNameHook;
+  const sectionState = useRecoilValue(sectionStateHook);
+  const documentID = useRecoilValue(documentIDHook);
+  const templateID = useRecoilValue(templateIDHook);
+  const token = useRecoilValue(tokenHook);
+  const name = useRecoilValue(nameHook);
+  const [previewURL, setPreviewURL] = useRecoilState(previewURLHook);
 
-  const [isLoading, setIsLoadng] = useState(false)
-  const [previewURL, setPreviewURL] = previewURLHook;
+  const [isLoading, setIsLoadng] = useState(false);
   const [updateTime, setUpdateTime] = useState();
 
   const requestPDFOnClick = async () => {
@@ -58,7 +58,9 @@ export function GeneratePDF(props) {
         createHeaderInfo(token)
       )
       .then((result) => {
-        const lastGenerationLog = result.data.document.generation_logs.at(-1) ?? {timestamp: 0};
+        const lastGenerationLog = result.data.document.generation_logs.at(
+          -1
+        ) ?? { timestamp: 0 };
         if (new Date(updateTime) <= new Date(lastGenerationLog.timestamp))
           window.open(result.data.document.download_url);
         else {
@@ -82,15 +84,14 @@ export function GeneratePDF(props) {
       ) : (
         <>
           <iframe src={previewURL} />
-          {isLoading ?
+          {isLoading ? (
             <p>Loading...</p>
-            :
-            <> 
+          ) : (
+            <>
               <Button onClick={requestPDFOnClick}>Update PDF</Button>
               <Button onClick={createDownloadLink}>Download PDF</Button>
             </>
-          }
-
+          )}
         </>
       )}
     </div>

@@ -9,6 +9,12 @@ import {
   ArraySection,
   ParentSection,
 } from '../../components/TemplateFields/Section';
+import { sectionStateHook } from '../../util/Atoms';
+import {
+  useRecoilState,
+} from 'recoil';
+
+
 
 const isObject = (item) => typeof item == 'object' && item !== null;
 
@@ -179,7 +185,6 @@ export const ChooseDataForTemplate = (props) => {
   // on the right hand side have inputs for each of the required template names
   // drag item from one side to the other
 
-  const { sectionStateHook } = props;
   const [draggedTreeNode, setDraggedTreeNode] = useState();
   const [draggedJSONNode, setDraggedJSONNode] = useState();
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -189,7 +194,7 @@ export const ChooseDataForTemplate = (props) => {
     sectionType: '',
   });
   const templateSchema = processTemplateStructure(templateStructure);
-  const [sectionStates, setSectionStates] = sectionStateHook;
+  const [sectionStates, setSectionStates] = useRecoilState(sectionStateHook);
 
   // change this to take in section type with optional index param
   const handleFieldChange = (

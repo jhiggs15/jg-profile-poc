@@ -7,23 +7,24 @@ import { ChooseDataForTemplate } from '../ChooseDataForTemplate/ChooseDataForTem
 import { GeneratePDF } from '../GeneratePDF/GeneratePDF';
 import { createTemplateInfo, createHeaderInfo } from '../../util/PDFMonkeyUtil';
 import axios from 'axios';
+import { tokenHook, templateIDHook } from '../../util/Atoms';
+import {
+  useRecoilValue,
+} from 'recoil';
 
 export const CreateProfile = (props) => {
-  const sectionStateHook = useState({});
-  const documentPersonNameHook = useState();
-  const tokenHook = useState('');
-  const templateIDHook = useState('');
-  const documentIDHook = useState('');
-  const previewURLHook = useState('');
 
   const [stepValue, setStepValue] = useState(0);
+
+  const templateID = useRecoilValue(templateIDHook)
+  const token = useRecoilValue(tokenHook)
 
   const createDraftDocument = () => {
     axios
       .post(
         'https://api.pdfmonkey.io/api/v1/documents',
-        createTemplateInfo(templateIDHook[0], 'John'),
-        createHeaderInfo(tokenHook[0])
+        createTemplateInfo(templateID, 'John'),
+        createHeaderInfo(token)
       )
       .then((result) => {
         documentIDHook[1](result.data.document.id);
@@ -35,20 +36,9 @@ export const CreateProfile = (props) => {
 
   const renderStep = () => {
     const steps = [
-      <Setup
-        tokenHook={tokenHook}
-        templateIDHook={templateIDHook}
-        nameHook={documentPersonNameHook}
-      />,
-      <ChooseDataForTemplate sectionStateHook={sectionStateHook} />,
-      <GeneratePDF
-        sectionStateHook={sectionStateHook}
-        tokenHook={tokenHook}
-        templateIDHook={templateIDHook}
-        documentIDHook={documentIDHook}
-        documentPersonNameHook={documentPersonNameHook}
-        previewURLHook={previewURLHook}
-      />,
+      <Setup />,
+      <ChooseDataForTemplate />,
+      <GeneratePDF />,
     ];
 
     return (

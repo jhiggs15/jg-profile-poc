@@ -1,12 +1,21 @@
 import { UserAddOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import React, { useState } from 'react';
+import { tokenHook, templateIDHook, nameHook } from '../../util/Atoms';
+import {useRecoilState, atom} from 'recoil';
 
+
+
+export const blah = atom({
+  key: 'blah',
+  default: {},
+});
 export const Setup = (props) => {
-  const { tokenHook, templateIDHook, nameHook } = props;
-  const [token, setToken] = tokenHook;
-  const [templateID, setTemplateID] = templateIDHook;
-  const [name, setName] = nameHook;
+  console.log(tokenHook);
+  const [token2, setToken2] = useRecoilState(blah); 
+  const [token, setToken] = useRecoilState(tokenHook);
+  const [templateID, setTemplateID] = useRecoilState(templateIDHook);
+  const [name, setName] = useRecoilState(nameHook);
 
   /*
       <h3>Enter the persons name who the pdf is describing</h3>
