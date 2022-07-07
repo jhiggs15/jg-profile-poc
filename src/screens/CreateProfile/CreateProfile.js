@@ -59,7 +59,6 @@ export const CreateProfile = (props) => {
 
     return (
       <>
-        {steps[stepValue]}
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           {stepValue != 0 ? (
             <Button
@@ -73,9 +72,9 @@ export const CreateProfile = (props) => {
           {stepValue < 2 ? (
             <Button
               onClick={() => {
-                if (stepValue == 0) {
-                  createDraftDocument();
-                }
+                // if (stepValue == 0) {
+                //   createDraftDocument();
+                // }
                 setStepValue(stepValue + 1);
               }}
             >
@@ -85,6 +84,8 @@ export const CreateProfile = (props) => {
             <Button> Download PDF </Button>
           )}
         </div>
+        {steps[stepValue]}
+
       </>
     );
   };
@@ -99,7 +100,6 @@ export const CreateProfile = (props) => {
           flexDirection: 'column',
         }}
       >
-        <h1> Create a PDF </h1>
         <Steps current={stepValue} style={{ justifyContent: 'center' }}>
           <Steps.Step title="Choose a Template" icon={<ScissorOutlined />} />
           <Steps.Step

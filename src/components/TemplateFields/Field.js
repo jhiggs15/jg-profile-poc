@@ -11,15 +11,16 @@ export const Field = ({
   handleFieldChange,
   field,
 }) => {
-
   // when we drag something into a field, check if it has a single key and that that key has no children, if so then simply put the value in It
   // otherwise open the modal and bring up the table transfer
   return (
     <>
       <h2>{title}</h2>
-      <Input
+      <Input.TextArea
         value={field}
+        style={{ minWidth: 250 }}
         onChange={(event) => handleFieldChange(title, event.target.value)}
+        autoSize={{ minRows: 3, maxRows: 5 }}
         onDragLeave={() => {
           const keys = Object.keys(draggedJSONNode);
           // dragged node has one key and the value for that key is not an object

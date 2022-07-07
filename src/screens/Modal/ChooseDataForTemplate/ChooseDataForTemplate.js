@@ -188,33 +188,76 @@ export const ChooseDataForTemplate = (props) => {
   const templateSchema = processTemplateStructure(templateStructure);
   const [sectionStates, setSectionStates] = sectionStateHook;
 
-  const handleFieldChange = (fieldName, sectionName, value) => {
+  // change this to take in section type with optional index param
+  const handleFieldChange = (
+    fieldName,
+    sectionName,
+    value,
+    sectionType,
+    index
+  ) => {
+    if (sectionType == 'ArraySection') {
+      let arraySection = sectionStates[sectionName];
+      if (!Array.isArray(arraySection)) arraySection = [];
+      arraySection[index] = { ...arraySection[index], [fieldName]: value };
+
+      setSectionStates({
+        ...sectionStates,
+        [sectionName]: arraySection,
+      });
+    } else {
+      setSectionStates({
+        ...sectionStates,
+        [sectionName]: { ...sectionStates[sectionName], [fieldName]: value },
+      });
+    }
+  };
+
+  const removeArrayItem = (sectionName, index) => {
     setSectionStates({
       ...sectionStates,
-      [sectionName]: { ...sectionStates[sectionName], [fieldName]: value },
+      [sectionName]: sectionStates[sectionName].filter(
+        (item, itemIndex) => itemIndex != index
+      ),
     });
   };
 
+  // take in section type with optional
   const getField = (fieldName, sectionName) => {
-    if (sectionStates[sectionName] )
-      
+    if (sectionStates[sectionName])
       return sectionStates[sectionName][fieldName];
     return null;
   };
 
   const createSections = (schema, sectionStates) => {
     return schema.map((item, index) => {
-      return (
-        <ArraySection
-          title={item.title}
-          children={item.children}
-          handleFieldChange={handleFieldChange}
-          getItem={getField}
-          index={index}
-          draggedJSONNode={draggedJSONNode}
-          triggerPopup={triggerPopup}
-        />
-      );
+      if (item.type == 'ArraySection') {
+        return (
+          <ArraySection
+            title={item.title}
+            schema={{ ...item.children[0] }}
+            children={item.children}
+            handleFieldChange={handleFieldChange}
+            getItem={getField}
+            removeArrayItem={removeArrayItem}
+            index={index}
+            draggedJSONNode={draggedJSONNode}
+            triggerPopup={triggerPopup}
+          />
+        );
+      } else if (item.type == 'ParentSection') {
+        return (
+          <ParentSection
+            title={item.title}
+            children={item.children}
+            handleFieldChange={handleFieldChange}
+            getItem={getField}
+            index={index}
+            draggedJSONNode={draggedJSONNode}
+            triggerPopup={triggerPopup}
+          />
+        );
+      }
     });
   };
   const triggerPopup = (title, sectionTitle) => {
@@ -224,7 +267,14 @@ export const ChooseDataForTemplate = (props) => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        paddingTop: 10,
+        paddingBottom: 10,
+      }}
+    >
       <Tree
         draggable
         onDragStart={({ event, node }) => {
@@ -243,18 +293,10 @@ export const ChooseDataForTemplate = (props) => {
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           {Array.isArray(draggedJSONNode) &&
           Array.isArray(draggedJSONNode[0]) ? (
-            <div style={{ flexDirection: 'column' }}>
-              {draggedJSONNode
-                .filter((item) => item.length > 0)
-                .map((item) => {
-                  return (
-                    <Table
-                      columns={treeNodeToColumn(draggedTreeNode)}
-                      dataSource={item}
-                    />
-                  );
-                })}
-            </div>
+            <Table
+              columns={treeNodeToColumn(draggedTreeNode)}
+              dataSource={draggedJSONNode.flat()}
+            />
           ) : (
             <Table
               columns={treeNodeToColumn(draggedTreeNode)}

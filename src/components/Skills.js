@@ -2,7 +2,6 @@ import { Select, Col, Row, Input } from 'antd';
 import { nanoid } from 'nanoid';
 import React, { useState } from 'react';
 
-
 import { inputData } from '../inputData';
 
 const { Option } = Select;
@@ -65,6 +64,6 @@ export const Skills = (props) => {
       </Row>
     </div>
   );
-}
+};
 
 export default Skills;
