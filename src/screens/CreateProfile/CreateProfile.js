@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import { BasicInfo } from '../../components/BasicInfo';
-import { Education } from '../../components/Education';
-import { Skills } from '../../components/Skills';
-import { Experience } from '../../components/Experience';
-import { Output } from '../../components/Output';
-import { Setup } from '../Modal/Setup/Setup';
-import { Button, Modal, Layout, Steps } from 'antd';
+import { Setup } from '../Setup/Setup';
+import { Button, Steps } from 'antd';
 
 import { ScissorOutlined } from '@ant-design/icons';
-import { inputData } from '../../inputData';
-import { ChooseDataForTemplate } from '../Modal/ChooseDataForTemplate/ChooseDataForTemplate';
-import { GeneratePDF } from '../Modal/GeneratePDF/GeneratePDF';
-import { createTemplateInfo, createHeaderInfo } from '../../util/util';
+import { ChooseDataForTemplate } from '../ChooseDataForTemplate/ChooseDataForTemplate';
+import { GeneratePDF } from '../GeneratePDF/GeneratePDF';
+import { createTemplateInfo, createHeaderInfo } from '../../util/PDFMonkeyUtil';
 import axios from 'axios';
 
 export const CreateProfile = (props) => {

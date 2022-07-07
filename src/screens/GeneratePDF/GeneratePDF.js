@@ -5,7 +5,7 @@ import {
   createPublishRequest,
   createRequest,
   createHeaderInfo,
-} from '../../../util/util';
+} from '../../util/PDFMonkeyUtil';
 // import output from "../../../output.json";
 
 export function GeneratePDF(props) {

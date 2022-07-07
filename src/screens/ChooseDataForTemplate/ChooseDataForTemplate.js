@@ -1,14 +1,14 @@
 import { Tree, Modal, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { getUser, test } from '../../../getUserQuery';
-import { inputData } from '../../../inputData';
-import { templateStructure } from '../../../templateStructure';
+import { getUser, test } from '../../getUserQuery';
+import { inputData } from '../../inputData';
+import { templateStructure } from '../../templateStructure';
 import { Field } from '../../../components/TemplateFields/Field';
 import { ArrayField } from '../../../components/TemplateFields/ArrayField';
 import {
   ArraySection,
   ParentSection,
-} from '../../../components/TemplateFields/Section';
+} from '../../components/TemplateFields/Section';
 
 const isObject = (item) => typeof item == 'object' && item !== null;
 
@@ -191,7 +191,6 @@ export const ChooseDataForTemplate = (props) => {
   const templateSchema = processTemplateStructure(templateStructure);
   const [sectionStates, setSectionStates] = sectionStateHook;
 
-
   // change this to take in section type with optional index param
   const handleFieldChange = (
     fieldName,
@@ -202,7 +201,7 @@ export const ChooseDataForTemplate = (props) => {
   ) => {
     if (sectionType == 'ArraySection') {
       let arraySection = sectionStates[sectionName];
-      if(!Array.isArray(arraySection)) arraySection = []
+      if (!Array.isArray(arraySection)) arraySection = [];
       else {
         arraySection[index] = { ...arraySection[index], [fieldName]: value };
         setSectionStates({
@@ -211,7 +210,6 @@ export const ChooseDataForTemplate = (props) => {
         });
       }
       // if (!Array.isArray(arraySection)) arraySection = [];
-
     } else {
       setSectionStates({
         ...sectionStates,
@@ -219,14 +217,14 @@ export const ChooseDataForTemplate = (props) => {
       });
     }
   };
-  
+
   const addArrayItem = (sectionName, value) => {
     let arraySection = sectionStates[sectionName];
-    if(!Array.isArray(arraySection)) arraySection = []
-    arraySection.push(value)
+    if (!Array.isArray(arraySection)) arraySection = [];
+    arraySection.push(value);
     setSectionStates({
       ...sectionStates,
-      [sectionName]: arraySection
+      [sectionName]: arraySection,
     });
   };
 
@@ -279,15 +277,13 @@ export const ChooseDataForTemplate = (props) => {
         : [copyOfFoundSection];
     }
 
-
     // changed to return not children
     return typeof foundSection == 'undefined' ? [] : foundSection;
   };
 
-
   const createSections = (schema) => {
     if (typeof schema == 'undefined') return;
-    if(!Array.isArray(schema)) schema = [schema]
+    if (!Array.isArray(schema)) schema = [schema];
     return schema.map((item, index) => {
       if (item.type == 'ArraySection') {
         return (
@@ -376,7 +372,9 @@ export const ChooseDataForTemplate = (props) => {
             )}
             <div style={{ height: '30vh', overflow: 'scroll' }}>
               {createSections(
-                getTemplateItem(templateSchema, focusedThing), true)}
+                getTemplateItem(templateSchema, focusedThing),
+                true
+              )}
             </div>
           </div>
         </Modal>
