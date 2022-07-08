@@ -1,6 +1,6 @@
 export const templateStructure = {
   userinfo: {
-    sectionType: 'Autofill',
+    type: 'Autofill',
     schema: {
       name: '',
       title: '',
@@ -10,13 +10,13 @@ export const templateStructure = {
     },
   },
   experience: {
-    sectionType: 'ShowData',
+    type: 'ShowData',
     schema: {
       experienceList: [{ experienceItem: '' }],
     },
   },
   skills: {
-    sectionType: 'Transfer',
+    type: 'Transfer',
     schema: {
       skillList: [{ skillName: '' }],
     },

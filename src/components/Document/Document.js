@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import "./Document.css"
 
 export const Document = ({previewURL}) => {
-  console.log("Hello World")
 
   return (
     <div class="wrap"> 

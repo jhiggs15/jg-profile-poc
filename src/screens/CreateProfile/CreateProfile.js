@@ -4,13 +4,18 @@ import { Button, Steps } from 'antd';
 
 import { ScissorOutlined } from '@ant-design/icons';
 import { ChooseDataForTemplate } from '../ChooseDataForTemplate/ChooseDataForTemplate';
+import { Test } from '../test.js';
 import { GeneratePDF } from '../GeneratePDF/GeneratePDF';
 import { createTemplateInfo, createHeaderInfo } from '../../util/PDFMonkeyUtil';
 import axios from 'axios';
 import { tokenHook, templateIDHook, treeHook } from '../../util/Atoms';
 import { useRecoilValue, useRecoilState } from 'recoil';
 
-const createSections = (schema) => {
+const createField = () => {
+
+}
+
+/*
   if (typeof schema == 'undefined') return;
   if (!Array.isArray(schema)) schema = [schema];
   return schema.map((item, index) => {
@@ -43,7 +48,9 @@ const createSections = (schema) => {
       );
     }
   });
-};
+*/
+
+
 
 export const CreateProfile = (props) => {
   const [stepValue, setStepValue] = useState(0);
@@ -51,7 +58,6 @@ export const CreateProfile = (props) => {
   const templateID = useRecoilValue(templateIDHook);
   const token = useRecoilValue(tokenHook);
   const tree = useRecoilValue(treeHook);
-  console.log(tree)
   const createDraftDocument = () => {
     axios
       .post(
@@ -69,9 +75,10 @@ export const CreateProfile = (props) => {
 
   const renderStep = () => {
     const steps = [
+      <Test />
       // <Setup />,
-      <ChooseDataForTemplate />,
-      <GeneratePDF />,
+      // <ChooseDataForTemplate />,
+      // <GeneratePDF />,
     ];
 
     const decrementStep = () => {
