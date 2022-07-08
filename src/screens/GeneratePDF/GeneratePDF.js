@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import axios from 'axios';
 import {
@@ -16,6 +16,8 @@ import {
   previewURLHook,
 } from '../../util/Atoms';
 
+import { Document } from '../../components/Document/Document.js';
+
 export function GeneratePDF(props) {
   const sectionState = useRecoilValue(sectionStateHook);
   const documentID = useRecoilValue(documentIDHook);
@@ -24,15 +26,15 @@ export function GeneratePDF(props) {
   const name = useRecoilValue(nameHook);
   const [previewURL, setPreviewURL] = useRecoilState(previewURLHook);
 
-  const [isLoading, setIsLoadng] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const [updateTime, setUpdateTime] = useState();
 
-  const requestPDFOnClick = async () => {
-    // axios.get(`https://api.pdfmonkey.io/api/v1/documents/${documentID}`, {
+  useEffect(() => {
     // pessimistic update time (time is less than any future update and greater than any past updates)
     // used to determine if the download has been updated yet
     const dateNow = new Date();
     setUpdateTime(dateNow.toISOString());
+    setLoading(true);
     axios
       .put(
         `https://api.pdfmonkey.io/api/v1/documents/${documentID}`,
@@ -41,11 +43,12 @@ export function GeneratePDF(props) {
       )
       .then((result) => {
         setPreviewURL(result.data.document.preview_url);
+        setLoading(false);
       })
       .catch((error) => {
         console.error(error);
       });
-  };
+  }, []);
 
   // sets document status to pending which triggers the download_url to be created
   // Based on the generation logs we can tell if the document has been updated
@@ -58,12 +61,15 @@ export function GeneratePDF(props) {
         createHeaderInfo(token)
       )
       .then((result) => {
+        setLoading(true);
+        // take another look at returning 0
         const lastGenerationLog = result.data.document.generation_logs.at(
           -1
         ) ?? { timestamp: 0 };
-        if (new Date(updateTime) <= new Date(lastGenerationLog.timestamp))
+        if (new Date(updateTime) <= new Date(lastGenerationLog.timestamp)) {
           window.open(result.data.document.download_url);
-        else {
+          setLoading(false);
+        } else {
           setTimeout(() => {
             createDownloadLink();
           }, 2000);
@@ -75,23 +81,13 @@ export function GeneratePDF(props) {
   };
 
   return (
-    <div>
-      <h1>Output</h1>
-      {previewURL === '' ? (
-        <>
-          <Button onClick={requestPDFOnClick}>Create PDF</Button>
-        </>
+    <div style={{ height: '100%' }}>
+      {isLoading ? (
+        <h1> Loading</h1>
       ) : (
         <>
-          <iframe src={previewURL} />
-          {isLoading ? (
-            <p>Loading...</p>
-          ) : (
-            <>
-              <Button onClick={requestPDFOnClick}>Update PDF</Button>
-              <Button onClick={createDownloadLink}>Download PDF</Button>
-            </>
-          )}
+          <Button onClick={createDownloadLink}>Download PDF</Button>
+          <Document previewURL={previewURL} />
         </>
       )}
     </div>

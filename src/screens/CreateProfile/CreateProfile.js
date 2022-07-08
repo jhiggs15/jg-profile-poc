@@ -7,18 +7,51 @@ import { ChooseDataForTemplate } from '../ChooseDataForTemplate/ChooseDataForTem
 import { GeneratePDF } from '../GeneratePDF/GeneratePDF';
 import { createTemplateInfo, createHeaderInfo } from '../../util/PDFMonkeyUtil';
 import axios from 'axios';
-import { tokenHook, templateIDHook } from '../../util/Atoms';
-import {
-  useRecoilValue,
-} from 'recoil';
+import { tokenHook, templateIDHook, treeHook } from '../../util/Atoms';
+import { useRecoilValue, useRecoilState } from 'recoil';
+
+const createSections = (schema) => {
+  if (typeof schema == 'undefined') return;
+  if (!Array.isArray(schema)) schema = [schema];
+  return schema.map((item, index) => {
+    if (item.type == 'ArraySection') {
+      return (
+        <ArraySection
+          title={item.title}
+          schema={{ ...item.children[0] }}
+          children={getSection(item.title) ?? []}
+          handleFieldChange={handleFieldChange}
+          getItem={getField}
+          addArrayItem={addArrayItem}
+          removeArrayItem={removeArrayItem}
+          index={index}
+          draggedJSONNode={draggedJSONNode}
+          triggerPopup={triggerPopup}
+        />
+      );
+    } else if (item.type == 'ParentSection') {
+      return (
+        <ParentSection
+          title={item.title}
+          children={item.children}
+          handleFieldChange={handleFieldChange}
+          getItem={getField}
+          index={index}
+          draggedJSONNode={draggedJSONNode}
+          triggerPopup={triggerPopup}
+        />
+      );
+    }
+  });
+};
 
 export const CreateProfile = (props) => {
-
   const [stepValue, setStepValue] = useState(0);
-
-  const templateID = useRecoilValue(templateIDHook)
-  const token = useRecoilValue(tokenHook)
-
+  const [currentDataSection, setCurrentDataSection] = useState('');
+  const templateID = useRecoilValue(templateIDHook);
+  const token = useRecoilValue(tokenHook);
+  const tree = useRecoilValue(treeHook);
+  console.log(tree)
   const createDraftDocument = () => {
     axios
       .post(
@@ -36,35 +69,33 @@ export const CreateProfile = (props) => {
 
   const renderStep = () => {
     const steps = [
-      <Setup />,
+      // <Setup />,
       <ChooseDataForTemplate />,
       <GeneratePDF />,
     ];
 
+    const decrementStep = () => {
+      setStepValue(stepValue - 1);
+    };
+
+    //
+    const incrementStep = () => {
+      // if (stepValue == 0) createDraftDocument();
+      setStepValue(stepValue + 1);
+    };
+
     return (
       <>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {stepValue != 0 ? (
-            <Button
-              onClick={() => {
-                setStepValue(stepValue - 1);
-              }}
-            >
-              Back
-            </Button>
-          ) : null}
-          {stepValue < 2 ? (
-            <Button
-              onClick={() => {
-                if (stepValue == 0) {
-                  createDraftDocument();
-                }
-                setStepValue(stepValue + 1);
-              }}
-            >
-              Next
-            </Button>
-          ) : null}
+          <Button disabled={stepValue == 0} onClick={decrementStep}>
+            Back
+          </Button>
+          <Button
+            disabled={stepValue == steps.length - 1}
+            onClick={incrementStep}
+          >
+            Next
+          </Button>
         </div>
         {steps[stepValue]}
       </>
@@ -83,9 +114,10 @@ export const CreateProfile = (props) => {
         }}
       >
         <Steps current={stepValue} style={{ justifyContent: 'center' }}>
-          <Steps.Step title="Choose a Template" icon={<ScissorOutlined />} />
+          {/* <Steps.Step title="Choose a Template" icon={<ScissorOutlined />} /> */}
           <Steps.Step
             title="Select Data for Template"
+            description={currentDataSection}
             icon={<ScissorOutlined />}
           />
           <Steps.Step title="Generate PDF" icon={<ScissorOutlined />} />

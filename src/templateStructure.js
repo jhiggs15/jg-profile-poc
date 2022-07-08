@@ -1,13 +1,24 @@
 export const templateStructure = {
   userinfo: {
-    name: '',
-    title: '',
-    funfact: '',
+    sectionType: 'Autofill',
+    schema: {
+      name: '',
+      title: '',
+      funfact: '',
+      school: '',
+      degree: '',
+    },
   },
-  education: {
-    school: '',
-    degree: '',
+  experience: {
+    sectionType: 'ShowData',
+    schema: {
+      experienceList: [{ experienceItem: '' }],
+    },
   },
-  experience: [{ experienceItem: '' }],
-  skillList: [{ skillName: '' }],
+  skills: {
+    sectionType: 'Transfer',
+    schema: {
+      skillList: [{ skillName: '' }],
+    },
+  },
 };

@@ -9,66 +9,90 @@ import {
   ArraySection,
   ParentSection,
 } from '../../components/TemplateFields/Section';
-import { sectionStateHook } from '../../util/Atoms';
-import {
-  useRecoilState,
-} from 'recoil';
-
-
+import { sectionStateHook, treeHook } from '../../util/Atoms';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 const isObject = (item) => typeof item == 'object' && item !== null;
 
-// ignores the key completely and doesnt attempt to dril down
-const ignoreCompletely = ['__typename', 'category'];
-// ignores the key but can drill down further if its an object
-const ignorePartially = ['edges', 'node'];
+/**
+ * Converts a tree to a JSON object from the information within input data
+ * root: the current root of the tree to be explored
+ * inputData: the data to create the JSON objects from
+ * rootTitle: the roots title
+ */
+const treeToJSON = (root, inputData, rootTitle) => {
+  // if the node has no values
+  // TODO : not sure if this is relevant
+  // if (Object.keys(node).length == 0){
+  //   console.log("here")
+  //   return;
+  // }
 
-const queryToTree = (query) => {
-  const selections =
-    query.definitions[0].selectionSet.selections[0].selectionSet.selections;
-  const parentListOfChildren = [];
-  queryToTreeRecursive(selections, parentListOfChildren, '');
-  return parentListOfChildren;
-};
-
-const queryToTreeRecursive = (selections, parentListOfChildren, path) => {
-  for (let selection of selections) {
-    let attributeName = selection.name.value;
-    let newPath = `${path}.${attributeName}`;
-
-    if (!ignoreCompletely.includes(attributeName)) {
-      if (!ignorePartially.includes(attributeName)) {
-        let child = {};
-        child.title = attributeName;
-        child.key = newPath;
-        parentListOfChildren.push(child);
-
-        // if the selectionSet is undefined
-        if (typeof selection.selectionSet != 'undefined') {
-          let childsChildren = [];
-          child.children = childsChildren;
-          queryToTreeRecursive(
-            selection.selectionSet.selections,
-            childsChildren,
-            newPath
-          );
+  // in this function refernces to a child refers to an attribute
+  /*
+    {
+      title: "attendedConnection",
+      key: ".attendedConnection"
+      children: [
+        { <------ CHILD
+          title: "eductationName",
+          key: ".attendedConnection.edges.node.educationName"
         }
-      } else if (typeof selection.selectionSet != 'undefined')
-        queryToTreeRecursive(
-          selection.selectionSet.selections,
-          parentListOfChildren,
-          newPath
-        );
+        ...
+      ]
     }
+  */
+
+  // if the root does not have children, process it as leaf
+  if (!root.hasOwnProperty('children'))
+    return leafNodeToJSON(pathToArray(root.key), inputData);
+  // if it does have children
+  else {
+    // get the roots children
+    let children = root.children;
+    // an array where each item is the data for each child
+    let arrayOfChildData = [];
+    // iterate through all children and get their data
+    for (let child of children)
+      arrayOfChildData.push(treeToJSON(child, inputData, rootTitle));
+    // combine children from
+    // arrayOfChildData = [[{educationName: "Sage College"}, ...], [{degreeName: "MBA"}, ...]]
+    // to
+    // [{educationName: "Sage College", degreeName: "MBA"}, ...]
+    // assumes must have more than one child
+    return arrayOfChildData[0].map((childData, index) => {
+      // if the child data is an array
+      // only occurs within nonJGProjects.usesSkillConnection
+      if (Array.isArray(childData)) {
+        let newChildData = {};
+        let data = childData.map((item2, index2) => {
+          let newItem = { ...item2 };
+          combineJSONResults(
+            newItem,
+            arrayOfChildData.slice(1),
+            (field) => field[index][index2]
+          );
+          return newItem;
+        });
+
+        if (rootTitle != root.title) {
+          newChildData[root.title] = data;
+          return newChildData;
+        } else return data;
+      } else {
+        let newItem = { ...childData };
+        combineJSONResults(
+          newItem,
+          arrayOfChildData.slice(1),
+          (field) => field[index]
+        );
+        return newItem;
+      }
+    });
   }
 };
 
-const processArray = (pathArray, data) => {
-  // for every single array item process the rest of the path
-  return data.map((item) => treeNodeToJSON(pathArray, item));
-};
-
-const treeNodeToJSON = (pathArray, inputData) => {
+const leafNodeToJSON = (pathArray, inputData) => {
   let currentData = inputData;
   let pathLeft = [...pathArray];
   let pathItem;
@@ -83,51 +107,30 @@ const treeNodeToJSON = (pathArray, inputData) => {
   return returnValue;
 };
 
+const processArray = (pathArray, data) => {
+  // for every single array item process the rest of the path
+  return data.map((item) => leafNodeToJSON(pathArray, item));
+};
+
+/**
+ *
+ */
 const combineJSONResults = (item, otherFields, getOtherFieldCallBack) => {
   for (let field of otherFields) {
     Object.assign(item, getOtherFieldCallBack(field));
   }
 };
 
-const treeToJSON = (node, inputData, rootTitle) => {
-  if (Object.keys(node).length == 0) return;
-  if (!node.hasOwnProperty('children')) {
-    let pathArray = node.key.split('.');
-    pathArray.shift();
-    return treeNodeToJSON(pathArray, inputData);
-  } else {
-    let children = node.children;
-    // an array where each item is all the data for a given attribute
-    let arrayOfFieldData = [];
-    for (let child of children)
-      arrayOfFieldData.push(treeToJSON(child, inputData, rootTitle));
-    return arrayOfFieldData[0].map((item, index) => {
-      if (Array.isArray(item)) {
-        let objectToReturn = {};
-        let data = item.map((item2, index2) => {
-          let newItem = { ...item2 };
-          combineJSONResults(
-            newItem,
-            arrayOfFieldData.slice(1),
-            (field) => field[index][index2]
-          );
-          return newItem;
-        });
-        if (rootTitle != node.title) {
-          objectToReturn[node.title] = data;
-          return objectToReturn;
-        } else return data;
-      } else {
-        let newItem = { ...item };
-        combineJSONResults(
-          newItem,
-          arrayOfFieldData.slice(1),
-          (field) => field[index]
-        );
-        return newItem;
-      }
-    });
-  }
+/**
+ * Converts a path to an array of path items
+ * path: path to be coneverted
+ */
+const pathToArray = (path) => {
+  // converts path to array
+  let pathArray = path.split('.');
+  // removes first .
+  pathArray.shift();
+  return pathArray;
 };
 
 const treeNodeToColumn = (tree) => {
@@ -195,6 +198,7 @@ export const ChooseDataForTemplate = (props) => {
   });
   const templateSchema = processTemplateStructure(templateStructure);
   const [sectionStates, setSectionStates] = useRecoilState(sectionStateHook);
+  const tree = useRecoilValue(treeHook);
 
   // change this to take in section type with optional index param
   const handleFieldChange = (
@@ -349,7 +353,7 @@ export const ChooseDataForTemplate = (props) => {
             setDraggedTreeNode(node);
             setDraggedJSONNode(treeToJSON(node, inputData, node.title));
           }}
-          treeData={queryToTree(getUser)}
+          treeData={tree}
         />
         <Modal
           width={'auto'}
@@ -383,7 +387,14 @@ export const ChooseDataForTemplate = (props) => {
             </div>
           </div>
         </Modal>
-        <div style={{ overflow: 'scroll', height: '100%' }}>
+        <div
+          style={{
+            overflow: 'scroll',
+            height: '100%',
+            width: '100%',
+            paddingLeft: 20,
+          }}
+        >
           {createSections(templateSchema)}
         </div>
       </div>

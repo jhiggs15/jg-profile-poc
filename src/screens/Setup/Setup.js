@@ -5,14 +5,7 @@ import { tokenHook, templateIDHook, nameHook } from '../../util/Atoms';
 import {useRecoilState, atom} from 'recoil';
 
 
-
-export const blah = atom({
-  key: 'blah',
-  default: {},
-});
 export const Setup = (props) => {
-  console.log(tokenHook);
-  const [token2, setToken2] = useRecoilState(blah); 
   const [token, setToken] = useRecoilState(tokenHook);
   const [templateID, setTemplateID] = useRecoilState(templateIDHook);
   const [name, setName] = useRecoilState(nameHook);
