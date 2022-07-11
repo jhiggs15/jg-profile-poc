@@ -57,6 +57,9 @@ export const templateStructure = {
  },
  skills: {
    type: 'Transfer',
+   options : {
+    transfer: [{title: "Non JG Project Skills", path: '.nonJGProjects.usesSkillConnection.edges.node.name'}, {title: "Skills", path: '.skills.name'}, {title: "Certifications", path:'.certs.name'}  ]
+   },
    schema: {
      skillList: [{ skillName: '' }],
    },

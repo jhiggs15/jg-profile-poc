@@ -49,7 +49,7 @@ export const templateIDHook = atom({
 });
 export const documentIDHook = atom({
  key: 'documentState',
- default: 'C1796521-EDD6-4E1C-95FE-2F9204680110',
+ default: 'F932109B-B67F-4F3A-A96E-4E19ED704155',
 });
 export const previewURLHook = atom({
  key: 'previewState',

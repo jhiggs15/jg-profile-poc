@@ -22,9 +22,9 @@ export const TreeDisplay = () => {
                 visible={Object.keys(popupField).length != 0}
                 footer={null}
             >
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <TableDisplay height={"20vh"} columns={treeNodeToColumn(draggedTreeNode)} dataSource={draggedTreeJSONNode} style={{height: '30vh', marginBottom: 20 }}/>
-                    <div style={{ height: '30vh', overflow: 'scroll' }}>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <TableDisplay height={"50vh"} columns={treeNodeToColumn(draggedTreeNode)} dataSource={draggedTreeJSONNode} style={{width: '50%', marginBottom: 20 }}/>
+                    <div style={{ width: "50%", height:'100%' }}>
                         {popupField}
                     </div>
                 </div>

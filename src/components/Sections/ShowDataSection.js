@@ -83,7 +83,7 @@ export const ShowDataSection = ({title, schema, pathsToDisplay}) => {
                 <h1 style={{textAlign: "center"}}>{title}</h1>
                 {createSectionFields()}
             </div>
-            </div>
+          </div>
         </div>
 
        )

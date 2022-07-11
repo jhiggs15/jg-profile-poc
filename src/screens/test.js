@@ -7,6 +7,7 @@ import { sectionStateHook, treeHook } from '../util/Atoms';
 import { Section } from '../components/Sections/Section';
 import { TreeDisplay } from '../components/Data/TreeDisplay';
 import { ShowDataSection } from '../components/Sections/ShowDataSection';
+import { TransferSection } from '../components/Sections/TransferSection';
  
  
 const createSections = (templateStructure) => {
@@ -15,13 +16,13 @@ const createSections = (templateStructure) => {
    // create sections here
    switch (section.type) {
      case 'Section':
-      return
-      //  return (
-      //    <Section title={sectionTitle} schema={section.schema} />
-      //  )
+       return (
+         <Section title={sectionTitle} schema={section.schema} />
+       )
      case 'ShowData':
       return <ShowDataSection title={sectionTitle} schema={section.schema} pathsToDisplay={section.options.show} />
      case 'Transfer':
+      return <TransferSection title={sectionTitle} schema={section.schema} transfer={section.options.transfer} />
      default:
    }
  });
@@ -29,6 +30,7 @@ const createSections = (templateStructure) => {
  
 export const Test = () => {
  const section = useRecoilValue(sectionStateHook)
+ const tree = useRecoilValue(treeHook)
 
  
  return <>

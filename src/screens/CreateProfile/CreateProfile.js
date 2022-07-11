@@ -8,54 +8,38 @@ import { Test } from '../test.js';
 import { GeneratePDF } from '../GeneratePDF/GeneratePDF';
 import { createTemplateInfo, createHeaderInfo } from '../../util/PDFMonkeyUtil';
 import axios from 'axios';
-import { tokenHook, templateIDHook, treeHook } from '../../util/Atoms';
+import { tokenHook, templateIDHook, treeHook, sectionStateHook } from '../../util/Atoms';
 import { useRecoilValue, useRecoilState } from 'recoil';
+import { Section } from '../../components/Sections/Section';
+import { ShowDataSection } from '../../components/Sections/ShowDataSection';
+import { TransferSection } from '../../components/Sections/TransferSection';
+import { templateStructure } from '../../templateStructure';
 
-const createField = () => {
-
-}
-
-/*
-  if (typeof schema == 'undefined') return;
-  if (!Array.isArray(schema)) schema = [schema];
-  return schema.map((item, index) => {
-    if (item.type == 'ArraySection') {
-      return (
-        <ArraySection
-          title={item.title}
-          schema={{ ...item.children[0] }}
-          children={getSection(item.title) ?? []}
-          handleFieldChange={handleFieldChange}
-          getItem={getField}
-          addArrayItem={addArrayItem}
-          removeArrayItem={removeArrayItem}
-          index={index}
-          draggedJSONNode={draggedJSONNode}
-          triggerPopup={triggerPopup}
-        />
-      );
-    } else if (item.type == 'ParentSection') {
-      return (
-        <ParentSection
-          title={item.title}
-          children={item.children}
-          handleFieldChange={handleFieldChange}
-          getItem={getField}
-          index={index}
-          draggedJSONNode={draggedJSONNode}
-          triggerPopup={triggerPopup}
-        />
-      );
+const createSections = (templateStructure) => {
+  return Object.keys(templateStructure).map((sectionTitle) => {
+    const section = templateStructure[sectionTitle];
+    // create sections here
+    switch (section.type) {
+      case 'Section':
+        return (
+          <Section title={sectionTitle} schema={section.schema} />
+        )
+      case 'ShowData':
+       return <ShowDataSection title={sectionTitle} schema={section.schema} pathsToDisplay={section.options.show} />
+      case 'Transfer':
+       return <TransferSection title={sectionTitle} schema={section.schema} transfer={section.options.transfer} />
+      default:
     }
   });
-*/
-
+ };
 
 
 export const CreateProfile = (props) => {
   const [stepValue, setStepValue] = useState(0);
-  const [currentDataSection, setCurrentDataSection] = useState('');
+  const [selectDataStatus, setSelectDataStatus] = useState('process');
+
   const templateID = useRecoilValue(templateIDHook);
+  const section = useRecoilValue(sectionStateHook);
   const token = useRecoilValue(tokenHook);
   const tree = useRecoilValue(treeHook);
   const createDraftDocument = () => {
@@ -73,20 +57,24 @@ export const CreateProfile = (props) => {
       });
   };
 
+  const dataSections = createSections(templateStructure)
+
   const renderStep = () => {
     const steps = [
-      <Test />
       // <Setup />,
-      // <ChooseDataForTemplate />,
-      // <GeneratePDF />,
+      ...dataSections,
+      <GeneratePDF />,
     ];
 
     const decrementStep = () => {
+      if(stepValue + 1 != steps.length - 1) setSelectDataStatus('process')
+
       setStepValue(stepValue - 1);
     };
 
     //
     const incrementStep = () => {
+      if(stepValue + 1 == steps.length - 1) setSelectDataStatus('finish')
       // if (stepValue == 0) createDraftDocument();
       setStepValue(stepValue + 1);
     };
@@ -120,14 +108,12 @@ export const CreateProfile = (props) => {
           height: '10vh',
         }}
       >
-        <Steps current={stepValue} style={{ justifyContent: 'center' }}>
-          {/* <Steps.Step title="Choose a Template" icon={<ScissorOutlined />} /> */}
-          <Steps.Step
+        <Steps style={{ justifyContent: 'center' }}>
+          <Steps.Step status={selectDataStatus}
             title="Select Data for Template"
-            description={currentDataSection}
             icon={<ScissorOutlined />}
           />
-          <Steps.Step title="Generate PDF" icon={<ScissorOutlined />} />
+          <Steps.Step status={selectDataStatus == 'process' ? 'wait' : 'process'} title="Generate PDF" icon={<ScissorOutlined />} />
         </Steps>
       </div>
       <div style={{ height: '90vh' }}>{renderStep(stepValue)}</div>

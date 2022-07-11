@@ -34,9 +34,17 @@ const ArraySubItem = ({ sectionTitle, title, index, field }) => {
     newSection[sectionTitle] = newSectionItem;
     setSection(newSection);
   };
+  
+  const getValue = () => {
+    if(typeof section[sectionTitle] == 'undefined') return ""
+    if(typeof section[sectionTitle][title] == 'undefined') return ""
+    if(typeof section[sectionTitle][title][index] == 'undefined') return ""
+    if(typeof section[sectionTitle][title][index][field] == 'undefined') return ""
+    return section[sectionTitle][title][index][field]
+  }
 
   return (
-    <Input value={section[sectionTitle][title][index][field]} onChange={(event) => update(event.target.value)} 
+    <Input.TextArea value={getValue()} onChange={(event) => update(event.target.value)} autoSize={{ minRows: 2, maxRows: 5 }}
       onDragOver={(event) => { event.stopPropagation(); event.preventDefault();}} 
       onDrop={(event) => {
       const keys = Object.keys(draggedTreeJSONNode);
