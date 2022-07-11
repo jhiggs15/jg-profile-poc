@@ -5,6 +5,7 @@ import { templateStructure } from '../templateStructure';
 import { useRecoilValue } from 'recoil';
 import { sectionStateHook, treeHook } from '../util/Atoms';
 import { Section } from '../components/Sections/Section';
+import { TreeDisplay } from '../components/Data/TreeDisplay';
  
  
 const createSections = (templateStructure) => {
@@ -28,8 +29,10 @@ export const Test = () => {
 
  
  return <>
-   {JSON.stringify(section)}
+    <TreeDisplay />
    {createSections(templateStructure)}
+   {JSON.stringify(section)}
+
  </>;
 };
  

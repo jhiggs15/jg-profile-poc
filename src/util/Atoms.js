@@ -9,11 +9,27 @@ export const treeHook = atom({
  default: queryToTree(getUser),
 });
  
+export const draggedTreeNodeHook = atom({
+  key: 'draggedTreeNode',
+  default: {}
+})
+
+export const draggedTreeJSONNodeHook = atom({
+  key: 'draggedTreeJSONNode',
+  default: {}
+})
+
+
 export const inputDataHook = atom({
- key: '',
+ key: 'inputData',
  default: inputData,
 });
- 
+
+export const popupFieldHook = atom({
+  key: 'popupField',
+  default: {},
+ });
+
 export const sectionStateHook = atom({
  key: 'sectionState',
  default: getTemplateStructureInitValue(inputData),

@@ -12,37 +12,7 @@ import {
 import { sectionStateHook, treeHook } from '../../util/Atoms';
 import { useRecoilState, useRecoilValue } from 'recoil';
  
-const isObject = (item) => typeof item == 'object' && item !== null;
- 
 
- 
-const treeNodeToColumn = (tree) => {
- const columns = [];
- if (!isObject(tree)) return columns;
- else if (!tree.hasOwnProperty('children'))
-   return [{ title: tree.title, dataIndex: tree.title }];
- else treeNodeToColumnRecursive(tree.children, columns, []);
- 
- return columns;
-};
- 
-// TODO this can be changed so that column is an attribute of the return of queryToTree
-const treeNodeToColumnRecursive = (tree, columns, path) => {
- for (let treeNode of tree) {
-   const newPath = [...path];
-   newPath.push(treeNode.title);
-   if (treeNode.hasOwnProperty('children')) {
-     const treeNodeColumns = treeNodeToColumn(treeNode);
-     columns.push({
-       title: treeNode.title,
-       dataIndex: newPath,
-       render: (text) => {
-         return <Table columns={treeNodeColumns} dataSource={text} />;
-       },
-     });
-   } else columns.push({ title: treeNode.title, dataIndex: newPath });
- }
-};
  
 const processTemplateStructure = (template) => {
  const schema = [];
@@ -238,38 +208,7 @@ export const ChooseDataForTemplate = (props) => {
          }}
          treeData={tree}
        />
-       <Modal
-         width={'auto'}
-         bodyStyle={{ height: '70vh', overflow: 'scroll' }}
-         onCancel={() => setPopupVisible(false)}
-         visible={isPopupVisible}
-         footer={null}
-       >
-         <div style={{ display: 'flex', flexDirection: 'column' }}>
-           {Array.isArray(draggedJSONNode) &&
-           Array.isArray(draggedJSONNode[0]) ? (
-             <Table
-               style={{ height: '30vh', marginBottom: 20 }}
-               scroll={{ y: '20vh' }}
-               columns={treeNodeToColumn(draggedTreeNode)}
-               dataSource={draggedJSONNode.flat()}
-             />
-           ) : (
-             <Table
-               style={{ maxHeight: '30vh', marginBottom: 20 }}
-               scroll={{ y: '20vh' }}
-               columns={treeNodeToColumn(draggedTreeNode)}
-               dataSource={draggedJSONNode}
-             />
-           )}
-           <div style={{ height: '30vh', overflow: 'scroll' }}>
-             {createSections(
-               getTemplateItem(templateSchema, focusedThing),
-               true
-             )}
-           </div>
-         </div>
-       </Modal>
+
        <div
          style={{
            overflow: 'scroll',
