@@ -4,8 +4,7 @@ import React, { useState } from "react"
 import { Tree, Modal, Table, Input } from 'antd';
 import { treeToJSON } from "../../util/TreeToJSON";
 import { treeNodeToColumn } from "../../util/TreeNodeToColumn";
-
- 
+import { TableDisplay } from "./TableDisplay";
 
 export const TreeDisplay = () => {
     const tree = useRecoilValue(treeHook)
@@ -24,26 +23,10 @@ export const TreeDisplay = () => {
                 footer={null}
             >
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {Array.isArray(draggedTreeJSONNode) &&
-                Array.isArray(draggedTreeJSONNode[0]) ? (
-                    <Table
-                    style={{ height: '30vh', marginBottom: 20 }}
-                    scroll={{ y: '20vh' }}
-                    columns={treeNodeToColumn(draggedTreeNode)}
-                    dataSource={draggedTreeJSONNode.flat()}
-                    />
-                ) : (
-                    <Table
-                    style={{ maxHeight: '30vh', marginBottom: 20 }}
-                    scroll={{ y: '20vh' }}
-                    columns={treeNodeToColumn(draggedTreeNode)}
-                    dataSource={draggedTreeJSONNode}
-                    />
-                )}
-                {/* TODO figure out how im going to do popup */}
-                <div style={{ height: '30vh', overflow: 'scroll' }}>
-                    {popupField}
-                </div>
+                    <TableDisplay height={"20vh"} columns={treeNodeToColumn(draggedTreeNode)} dataSource={draggedTreeJSONNode} style={{height: '30vh', marginBottom: 20 }}/>
+                    <div style={{ height: '30vh', overflow: 'scroll' }}>
+                        {popupField}
+                    </div>
                 </div>
             </Modal>
 

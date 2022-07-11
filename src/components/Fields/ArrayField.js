@@ -1,12 +1,29 @@
 import React, { useState } from 'react';
-import { sectionStateHook, treeHook } from '../../util/Atoms';
+import { draggedTreeJSONNodeHook, popupFieldHook, sectionStateHook, treeHook } from '../../util/Atoms';
 import { useRecoilState } from 'recoil';
 import { Input, Button } from 'antd';
+import { isObject } from '../../util/TreeNodeToColumn';
 
 // TODO setting state may be able to be simplified
 
 const ArraySubItem = ({ sectionTitle, title, index, field }) => {
   const [section, setSection] = useRecoilState(sectionStateHook);
+  const [draggedTreeJSONNode, setDraggedTreeJSONNode] = useRecoilState(draggedTreeJSONNodeHook);
+  const [popupField, setPopupField] = useRecoilState(popupFieldHook)
+
+
+  const createSelf = (sectionTitle, title, index, field) => {
+    return (
+      <div>
+        <h1>{sectionTitle}</h1>
+        <h1>{`${title} : ${field}`}</h1>
+        <ArraySubItem sectionTitle={sectionTitle} title={title} index={index} field={field}/>
+
+      </div>
+    )
+
+  }
+
   const update = (newValue) => {
     const newSection = { ...section };
     const newSectionItem = { ...newSection[sectionTitle] };
@@ -18,7 +35,20 @@ const ArraySubItem = ({ sectionTitle, title, index, field }) => {
     setSection(newSection);
   };
 
-  return <Input onChange={(event) => update(event.target.value)} />;
+  return (
+    <Input value={section[sectionTitle][title][index][field]} onChange={(event) => update(event.target.value)} 
+      onDragOver={(event) => { event.stopPropagation(); event.preventDefault();}} 
+      onDrop={(event) => {
+      const keys = Object.keys(draggedTreeJSONNode);
+      // dragged node has one key and the value for that key is not an object
+      if (keys.length == 1 && !isObject(draggedTreeJSONNode[keys[0]])){
+        update(draggedTreeJSONNode[keys[0]]);
+        // todo probably reset treeNode
+      }
+      else setPopupField(createSelf(sectionTitle, title, index, field));
+      }} 
+    />
+  )
 };
 
 // lets array items be multi valued attributes

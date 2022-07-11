@@ -28,7 +28,7 @@ export const getTemplateStructureInitValue = (inputData) => {
  
 export const templateStructure = {
  userinfo: {
-   type: 'Autofill',
+   type: 'Section',
    options:{
     autofill: {
       name: ".name",
@@ -48,6 +48,9 @@ export const templateStructure = {
  },
  experience: {
    type: 'ShowData',
+   options: {
+    show: [".previousWorkConnection", ".nonJGProjects"]
+   },
    schema: {
      experienceList: [{ experienceItem: '' }],
    },

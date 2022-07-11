@@ -3,6 +3,7 @@ import { ArrayField } from "../Fields/ArrayField";
 import { Field } from "../Fields/Field";
 import { inputDataHook, sectionStateHook } from "../../util/Atoms";
 import { useRecoilValue, useRecoilState } from "recoil";
+import {TreeDisplay} from "../Data/TreeDisplay"
  
 export const Section = ({title, schema}) => {
    const inputData = useRecoilValue(inputDataHook)
@@ -20,10 +21,13 @@ export const Section = ({title, schema}) => {
    };
  
    return(
-       <div>
-           <h1>{title}</h1>
-           {createSectionFields()}
-       </div>
+    <div style={{display: "flex", flexDirection: "row"}}>
+      <TreeDisplay />
+      <div style={{width: "100%"}}>
+        <h1 style={{textAlign: "center"}}>{title}</h1>
+        {createSectionFields()}
+      </div>
+    </div>
    )
  
 }
