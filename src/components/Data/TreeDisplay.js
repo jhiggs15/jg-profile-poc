@@ -2,9 +2,9 @@ import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil"
 import { draggedTreeJSONNodeHook, draggedTreeNodeHook, inputDataHook, popupFieldHook, treeHook } from "../../util/Atoms"
 import React, { useState } from "react"
 import { Tree, Modal, Table, Input } from 'antd';
-import { treeToJSON } from "../../util/TreeToJSON";
-import { treeNodeToColumn } from "../../util/TreeNodeToColumn";
+import { treeNodeToColumn } from "../../util/toColumn";
 import { TableDisplay } from "./TableDisplay";
+import { pathToJSON } from "../../util/toJSON";
 
 export const TreeDisplay = () => {
     const tree = useRecoilValue(treeHook)
@@ -33,7 +33,7 @@ export const TreeDisplay = () => {
             <Tree treeData={tree} draggable style={{ height: '100%', overflow: 'scroll' }} 
                 onDragStart={({ event, node }) => {
                     setDraggedTreeNode(node);
-                    setDraggedTreeJSONNode(treeToJSON(node, inputData, node.title));
+                    setDraggedTreeJSONNode(pathToJSON(node.key, inputData));
                 }}
             
             />

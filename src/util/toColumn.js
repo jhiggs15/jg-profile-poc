@@ -1,10 +1,11 @@
 
-import { Tree, Modal, Table, Input } from 'antd';
+import { Table } from 'antd';
 
 export const isObject = (item) => typeof item == 'object' && item !== null;
  
 export const treeNodeToColumn = (tree) => {
  const columns = [];
+
  if (!isObject(tree)) return columns;
  else if (!tree.hasOwnProperty('children'))
    return [{ title: tree.title, dataIndex: tree.title }];

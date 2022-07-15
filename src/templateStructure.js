@@ -1,9 +1,9 @@
 import { useRecoilValue } from "recoil"
 import { inputDataHook } from "./util/Atoms"
-import { leafNodeToJSON, pathToArray } from "./util/TreeToJSON"
+import { pathToArray, pathToJSON } from "./util/toJSON"
  
  
-export const getTemplateStructureInitValue = (inputData) => {
+export const autofillTemplate = (inputData) => {
  let newSection = {}
  Object.keys(templateStructure).forEach(sectionItemName => {
    const sectionItem = templateStructure[sectionItemName]
@@ -12,8 +12,11 @@ export const getTemplateStructureInitValue = (inputData) => {
     const autofillOptions = sectionItem['options']['autofill']
     Object.keys(autofillOptions).forEach(templateItem => {
       const inputDataPath = autofillOptions[templateItem]
-      let autofillData = leafNodeToJSON(pathToArray(inputDataPath), inputData, true)
-      if(Array.isArray(autofillData)) autofillData = autofillData[0]
+      let autofillData = pathToJSON(inputDataPath, inputData)
+      if(Array.isArray(autofillData)){
+        autofillData = autofillData[0][pathToArray(inputDataPath).pop()]
+
+      } 
       newSectionContent[templateItem] = autofillData
     })
 
@@ -34,8 +37,8 @@ export const templateStructure = {
       name: ".name",
       title: ".tense_title",
       funfact: ".biography",
-      school: ".attendedConnection.edges.node.educationName",
-      degree: ".attendedConnection.edges.degreeName"
+      school: ".attendedConnection.educationName",
+      degree: ".attendedConnection.degreeName"
     }
    },
    schema: {
@@ -49,16 +52,30 @@ export const templateStructure = {
  experience: {
    type: 'ShowData',
    options: {
-    show: [".previousWorkConnection", ".nonJGProjects"]
+    show: [".previousWork", ".nonJGProjects"]
    },
    schema: {
      experienceList: [{ experienceItem: '' }],
    },
  },
  skills: {
-   type: 'Transfer',
+   type: 'Skills',
    options : {
-    transfer: [{title: "Non JG Project Skills", path: '.nonJGProjects.usesSkillConnection.edges.node.name'}, {title: "Skills", path: '.skills.name'}, {title: "Certifications", path:'.certs.name'}  ]
+    skillData: {
+      allSkills: {
+        path: ".skillsConnection"
+      },
+      JGProjectSkills: {
+        path: ".nonJGProjects",
+        companyName: "projectFullName",
+        skills: "usesSkillConnection"
+      },
+      prevWorkSkills: {
+        path: ".previousWork",
+        companyName: "companyName", // indicates where the attribute of the company name in the object, in case it needs to chang
+        skills: "usesSkillConnection" // indicates where the list of skills are in the object, in case it needs to chang
+      }
+    }
    },
    schema: {
      skillList: [{ skillName: '' }],

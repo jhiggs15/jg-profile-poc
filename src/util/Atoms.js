@@ -1,9 +1,12 @@
 import { atom } from 'recoil';
-import { queryToTree } from './QueryToTree';
+import { queryToTree, removeIgnoresFromInputData } from './toTree';
 import { getUser } from '../getUserQuery';
 import {inputData} from "../inputData"
-import { getTemplateStructureInitValue } from '../templateStructure';
+import { autofillTemplate } from '../templateStructure';
  
+const newInputData = removeIgnoresFromInputData(inputData)
+
+
 export const treeHook = atom({
  key: 'treeState',
  default: queryToTree(getUser),
@@ -22,7 +25,7 @@ export const draggedTreeJSONNodeHook = atom({
 
 export const inputDataHook = atom({
  key: 'inputData',
- default: inputData,
+ default: newInputData,
 });
 
 export const popupFieldHook = atom({
@@ -32,7 +35,7 @@ export const popupFieldHook = atom({
 
 export const sectionStateHook = atom({
  key: 'sectionState',
- default: getTemplateStructureInitValue(inputData),
+ default: autofillTemplate(newInputData),
 });
  
 export const nameHook = atom({

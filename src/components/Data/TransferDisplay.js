@@ -15,8 +15,6 @@ export const TransferDisplay = ({data, style, sectionTitle, title, fieldName}) =
       };
 
     const addItems = (values, indexes) => {
-        console.log(values)
-        console.log(indexes)
         const newSection = { ...section };
 
         const newSectionItem = { ...newSection[sectionTitle] };

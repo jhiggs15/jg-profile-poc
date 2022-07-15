@@ -3,6 +3,8 @@ import React from "react";
 import { Table } from 'antd';
 
 export const TableDisplay = ({style, columns, dataSource, height}) => {
+    console.log(dataSource)
+    console.log(columns)
 
     return (
         <>

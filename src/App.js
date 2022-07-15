@@ -6,6 +6,7 @@ import { CreateProfile } from './screens/CreateProfile/CreateProfile';
 import {
   RecoilRoot,
 } from 'recoil';
+import { Test } from './screens/test';
 
 export default function App() {
 
@@ -13,6 +14,7 @@ export default function App() {
     <RecoilRoot> 
       <Layout style={{ padding: 20 }}>
         <CreateProfile />
+        {/* <Test /> */}
       </Layout>
     </RecoilRoot>
 

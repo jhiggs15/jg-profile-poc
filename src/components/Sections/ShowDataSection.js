@@ -7,8 +7,8 @@ import {TreeDisplay} from "../Data/TreeDisplay"
 import { Button, Dropdown, Menu, Space, Typography } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { TableDisplay } from "../Data/TableDisplay";
-import { leafNodeToJSON, pathToArray, treeToJSON } from "../../util/TreeToJSON";
-import { treeNodeToColumn } from "../../util/TreeNodeToColumn";
+import { treeNodeToColumn } from "../../util/toColumn";
+import { pathToJSON, treeToJSON } from "../../util/toJSON";
 
 
 export const ShowDataSection = ({title, schema, pathsToDisplay}) => {
@@ -21,9 +21,11 @@ export const ShowDataSection = ({title, schema, pathsToDisplay}) => {
     
     const columns = pathsToDisplay.map(path => treeNodeToColumn(tree.find(treeItem => treeItem.key == path)) )
     const data = pathsToDisplay.map(path => {
-        const foundTreeItem = tree.find(treeItem => treeItem.key == path)
-        return treeToJSON(foundTreeItem, inputData, foundTreeItem.title)
+        console.log(path)
+        return pathToJSON(path, inputData)
     })
+
+    console.log(data)
 
   
     const createSectionFields = () => {

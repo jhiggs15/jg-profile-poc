@@ -6,7 +6,7 @@ import { inputDataHook, sectionStateHook, treeHook } from "../../util/Atoms";
 import { useRecoilValue, useRecoilState } from "recoil";
 import {TreeDisplay} from "../Data/TreeDisplay"
 import { Button, Dropdown, Menu, Space, Typography } from 'antd';
-import { leafNodeToJSON, pathToArray, treeToJSON } from "../../util/TreeToJSON";
+import { pathToJSON } from "../../util/toJSON";
 // import { DownOutlined } from '@ant-design/icons';
 // import { TableDisplay } from "../Data/TableDisplay";
 // import { leafNodeToJSON, pathToArray, treeToJSON } from "../../util/TreeToJSON";
@@ -54,7 +54,7 @@ export const TransferSection = ({title, schema, transfer}) => {
         // I dont think I need this
         // could be good if we need to remove the direct path or render children
         // let foundTreeItem = findTreeItem(tree, pathArray)
-        return leafNodeToJSON(pathToArray(transferItem.path), inputData, true)
+        return pathToJSON(transferItem.path, inputData)
     })
 
 

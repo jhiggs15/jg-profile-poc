@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { draggedTreeJSONNodeHook, popupFieldHook, sectionStateHook, treeHook } from '../../util/Atoms';
 import { useRecoilState } from 'recoil';
 import { Input, Button } from 'antd';
-import { isObject } from '../../util/TreeNodeToColumn';
+import { isObject } from '../../util/toColumn';
 
 // TODO setting state may be able to be simplified
 
@@ -49,10 +49,8 @@ const ArraySubItem = ({ sectionTitle, title, index, field }) => {
       onDrop={(event) => {
       const keys = Object.keys(draggedTreeJSONNode);
       // dragged node has one key and the value for that key is not an object
-      if (keys.length == 1 && !isObject(draggedTreeJSONNode[keys[0]])){
-        update(draggedTreeJSONNode[keys[0]]);
-        // todo probably reset treeNode
-      }
+      if(!isObject(draggedTreeJSONNode)) 
+        update(draggedTreeJSONNode);
       else setPopupField(createSelf(sectionTitle, title, index, field));
       }} 
     />

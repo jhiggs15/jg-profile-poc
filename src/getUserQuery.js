@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const getUser = gql`
-query ExampleQuery($personEmail: String, $personName: String ) {
-    people(where: { email:$personEmail , OR:{name: $personName }}) {
+query ExampleQuery($where: PersonWhere) {
+    people(where: $where) {
         name
         email
         tense_title
@@ -19,18 +19,6 @@ query ExampleQuery($personEmail: String, $personName: String ) {
             endDate
         }
         }
-
-        previousWorkConnection {
-        edges {
-            node {
-            companyName
-            }
-            role
-            description
-            startDate
-            endDate
-        }
-        }
         nonJGProjects {
         projectFullName
         usesSkillConnection {
@@ -38,27 +26,46 @@ query ExampleQuery($personEmail: String, $personName: String ) {
             rating
             node {
                 name
+              category(where: {type: "Category"}) {
+                value
+              }
             }
             }
 
         }
         }
-        skills {
-        name
-        description
-        category {
-            type
-            value
-        }
-        }
-
         certs {
         name
         description
         category
         }
-
-
+      skillsConnection {
+        edges {
+          node {
+            name
+            description
+            imageLink
+            category(where: {type: "Category"}) {
+              value
+            }
+          }
+          rating
+        }
+      }
+      previousWork {
+        companyName
+        usesSkillConnection {
+          edges {
+            node {
+              name
+              category(where: {type: "Category"}) {
+                value
+              }
+            }
+            rating
+          }
+        }
+      }
     }
-    }
+}
 `
