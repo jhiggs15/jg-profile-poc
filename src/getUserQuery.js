@@ -65,6 +65,16 @@ query ExampleQuery($where: PersonWhere) {
             rating
           }
         }
+        employeeConnection {
+          edges {
+            description
+            location
+            startDate
+            endDate
+            sector
+            role
+          }
+        }
       }
     }
 }

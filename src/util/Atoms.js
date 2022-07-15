@@ -44,7 +44,7 @@ export const nameHook = atom({
 });
 export const tokenHook = atom({
  key: 'tokenState',
- default: 'RWKT_XJherzUoV3cDYyx',
+ default: 'ytn9xHP4v17KHSb_AFpN',
 });
 export const templateIDHook = atom({
  key: 'templateState',
@@ -52,7 +52,7 @@ export const templateIDHook = atom({
 });
 export const documentIDHook = atom({
  key: 'documentState',
- default: 'F932109B-B67F-4F3A-A96E-4E19ED704155',
+ default: '623665E6-37A6-4639-8359-E8C6EDB3DB14',
 });
 export const previewURLHook = atom({
  key: 'previewState',

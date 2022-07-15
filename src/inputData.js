@@ -15,17 +15,6 @@ export const inputData = {
               "startDate": "2011",
               "endDate": "2014",
               "__typename": "PersonAttendedRelationship"
-            },
-            {
-              "node": {
-                "educationName": "Sage Colleges2",
-                "__typename": "Education"
-              },
-              "degreeName": "Master of Business Administration (MBA 2.0)",
-              "majorName": "Business Administration",
-              "startDate": "2015",
-              "endDate": "2020",
-              "__typename": "PersonAttendedRelationship"
             }
           ],
           "__typename": "PersonAttendedConnection"
@@ -1385,8 +1374,23 @@ export const inputData = {
               ],
               "__typename": "PreviousWorkUsesSkillConnection"
             },
+            "employeeConnection": {
+              "edges": [
+                {
+                  "description": "Designed and created fact and dimension tables for retirement plan data warehouse",
+                  "location": "Albany, NY",
+                  "startDate": "2014",
+                  "endDate": "2015",
+                  "sector": "public",
+                  "role": "Information Technology Specialist II",
+                  "__typename": "PreviousWorkEmployeeRelationship"
+                }
+              ],
+              "__typename": "PreviousWorkEmployeeConnection"
+            },
             "__typename": "PreviousWork"
           }
         ],
         "__typename": "Person"
       }
+    

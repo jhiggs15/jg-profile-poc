@@ -8,14 +8,16 @@ import { Test } from '../test.js';
 import { GeneratePDF } from '../GeneratePDF/GeneratePDF';
 import { createTemplateInfo, createHeaderInfo } from '../../util/PDFMonkeyUtil';
 import axios from 'axios';
-import { tokenHook, templateIDHook, treeHook, sectionStateHook } from '../../util/Atoms';
+import { tokenHook, templateIDHook, treeHook, sectionStateHook, inputDataHook } from '../../util/Atoms';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { Section } from '../../components/Sections/Section';
 import { ShowDataSection } from '../../components/Sections/ShowDataSection';
 import { TransferSection } from '../../components/Sections/TransferSection';
 import { templateStructure } from '../../templateStructure';
+import { SkillsDisplay } from '../../components/Data/SkillsDisplay';
+import { pathToJSON } from '../../util/toJSON';
 
-const createSections = (templateStructure) => {
+const createSections = (templateStructure, inputData) => {
   return Object.keys(templateStructure).map((sectionTitle) => {
     const section = templateStructure[sectionTitle];
     // create sections here
@@ -28,6 +30,17 @@ const createSections = (templateStructure) => {
        return <ShowDataSection title={sectionTitle} schema={section.schema} pathsToDisplay={section.options.show} />
       case 'Transfer':
        return <TransferSection title={sectionTitle} schema={section.schema} transfer={section.options.transfer} />
+      case 'Skills':
+        const skillData = section.options.skillData
+        const allSkills = pathToJSON(skillData.allSkills.path, inputData)
+        const JGSkills = pathToJSON(skillData.JGProjectSkills.path, inputData)
+        const prevWorkSkills = pathToJSON(skillData.prevWorkSkills.path, inputData)
+        return (
+          <SkillsDisplay allSkills={allSkills} sectionItemKey={section.options.schemaItemKey} sectionTitle={sectionTitle} title={Object.keys(section.schema)[0]} 
+            JGProjects={{companyName: skillData.JGProjectSkills.companyName, skills: skillData.JGProjectSkills.skills, data: JGSkills}} 
+            prevWork={{companyName: skillData.prevWorkSkills.companyName, skills: skillData.prevWorkSkills.skills, data: prevWorkSkills}} 
+          />
+        )
       default:
     }
   });
@@ -39,6 +52,7 @@ export const CreateProfile = (props) => {
   const [selectDataStatus, setSelectDataStatus] = useState('process');
 
   const templateID = useRecoilValue(templateIDHook);
+  const inputData = useRecoilValue(inputDataHook);
   const section = useRecoilValue(sectionStateHook);
   const token = useRecoilValue(tokenHook);
   const tree = useRecoilValue(treeHook);
@@ -57,7 +71,7 @@ export const CreateProfile = (props) => {
       });
   };
 
-  const dataSections = createSections(templateStructure)
+  const dataSections = createSections(templateStructure, inputData)
 
   const renderStep = () => {
     const steps = [
