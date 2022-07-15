@@ -68,7 +68,7 @@ const createSections = (templateStructure, inputData) => {
       const JGSkills = pathToJSON(skillData.JGProjectSkills.path, inputData)
       const prevWorkSkills = pathToJSON(skillData.prevWorkSkills.path, inputData)
       return (
-        <SkillsDisplay allSkills={allSkills} 
+        <SkillsDisplay allSkills={allSkills} sectionItemKey={section.options.schemaItemKey} sectionTitle={sectionTitle} title={Object.keys(section.schema)[0]} 
           JGProjects={{companyName: skillData.JGProjectSkills.companyName, skills: skillData.JGProjectSkills.skills, data: JGSkills}} 
           prevWork={{companyName: skillData.prevWorkSkills.companyName, skills: skillData.prevWorkSkills.skills, data: prevWorkSkills}} 
         />

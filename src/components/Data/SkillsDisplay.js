@@ -1,6 +1,8 @@
 
-import React from "react"
+import React, { useState } from "react"
 import { Table } from 'antd';
+import { useRecoilState } from "recoil";
+import { sectionStateHook } from "../../util/Atoms";
 
 /**
  * name
@@ -33,6 +35,7 @@ const ratingToString = (rating) => {
 
 const createNewSkillItem = (name, rating, category, map) => {
     const skill = {name, rating: ratingToString(rating), category}
+    skill.key = name
     skill["JGProjects"] = []
     skill["prevWork"] = []
     map.set(name, skill)
@@ -40,8 +43,6 @@ const createNewSkillItem = (name, rating, category, map) => {
 }
 
 export const combineSkillsData = (allSkills, JGProjects, prevWork) => {
-
-
     const map = new Map()
 
     allSkills.forEach(skill => {
@@ -52,17 +53,41 @@ export const combineSkillsData = (allSkills, JGProjects, prevWork) => {
     iterateWorkData(JGProjects.data, "JGProjects", JGProjects.companyName, JGProjects.skills, map)
     iterateWorkData(prevWork.data, "prevWork", prevWork.companyName, prevWork.skills, map)
 
-    return Array.from(map.values())
-
-    
+    return Array.from(map.values())    
 }
 
 
-export const SkillsDisplay = ({allSkills, JGProjects, prevWork}) => {
+export const SkillsDisplay = ({allSkills, JGProjects, prevWork, sectionItemKey, sectionTitle, title}) => {
+    const [section, setSection] = useRecoilState(sectionStateHook);
 
-    console.log(allSkills)
-    console.log(JGProjects)
-    console.log(prevWork)
+    const removeItem = (index) => {
+        const newSection = { ...section };
+
+        const newSectionItem = { ...newSection[sectionTitle] };
+        const newArray = [...newSectionItem[title]].filter((item, oldIndex) => index != oldIndex)
+        newSectionItem[title] = newArray;
+        newSection[sectionTitle] = newSectionItem;
+        setSection(newSection)
+    }
+    
+    const addItems = (values) => {
+        const newSection = { ...section };
+
+        const newSectionItem = { ...newSection[sectionTitle] };
+        const newArray = [];
+        values.forEach((value) => {
+            newArray.push({[sectionItemKey] : value})
+        })
+        newSectionItem[title] = newArray;
+        newSection[sectionTitle] = newSectionItem;
+
+        setSection(newSection);
+    }
+
+    const handleChange = (selectedRowKeys) => {
+        addItems(selectedRowKeys)
+    };
+
 
     const vals = combineSkillsData(allSkills, JGProjects, prevWork)
 
@@ -74,15 +99,20 @@ export const SkillsDisplay = ({allSkills, JGProjects, prevWork}) => {
         {title: "JG Experiennce", dataIndex: "JGProjects"},
     ]
 
+    const rowSelection = {
+        type: 'checkbox',
+        onChange: handleChange,
+        getCheckboxProps: (record) => ({ name: record.name }),
+        selectedRowKeys: section[sectionTitle][title].map(item => {
+            return item[sectionItemKey]
+        })
+      };
+
     return (
         <div>
-            {/* {JSON.stringify(JGProjects)} */}
-            {/* {JSON.stringify(vals)} */}
-            {/* {JSON.stringify(prevWork)} */}
-            <Table dataSource={vals} columns={columns} />
-            {/* {JSON.stringify(JGProjects)}
-             */}
-
+            <Table
+                rowSelection={{...rowSelection}}
+                dataSource={vals} columns={columns} />
         </div>
     )
 

@@ -61,6 +61,7 @@ export const templateStructure = {
  skills: {
    type: 'Skills',
    options : {
+    schemaItemKey: 'skillName',
     skillData: {
       allSkills: {
         path: ".skillsConnection"

@@ -13,8 +13,8 @@ export default function App() {
   return (
     <RecoilRoot> 
       <Layout style={{ padding: 20 }}>
-        <CreateProfile />
-        {/* <Test /> */}
+        {/* <CreateProfile /> */}
+        <Test />
       </Layout>
     </RecoilRoot>
 
