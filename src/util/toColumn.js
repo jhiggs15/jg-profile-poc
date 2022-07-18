@@ -1,33 +1,91 @@
 
-import { Table } from 'antd';
+import { Table, List } from 'antd';
+import { getRootValue } from './toJSON';
+import { pathToTreeItem } from './toTree';
 
 export const isObject = (item) => typeof item == 'object' && item !== null;
- 
-export const treeNodeToColumn = (tree) => {
- const columns = [];
 
- if (!isObject(tree)) return columns;
- else if (!tree.hasOwnProperty('children'))
-   return [{ title: tree.title, dataIndex: tree.title }];
- else treeNodeToColumnRecursive(tree.children, columns, []);
+export const pathToColumn = (path, tree, inputData) => {
+  console.log(path)
+  const columns = []
+  const treeItem = pathToTreeItem(path, tree)
+  console.log(treeItem)
+  console.log(inputData)
+  let children = []
+  if(!treeItem.hasOwnProperty("children")) children.push(treeItem)
+  else children = treeItem.children
+  pathArrayToColumns(children, [], columns, inputData) 
+  return columns
+
+}
+
+
+/*
+  - cycle through children
+  - if the child has children 
+    - add it to the children field
+  - if it does not attach a dataindex
+  -   if it does not and its an array?
+*/
+
+const pathArrayToColumns = (listOfNodes, path, columns, inputData) => {
+  for(let child of listOfNodes) {
+    const newPath = [...path, child.title]
+    const column = { title: child.title }
+    if(child.hasOwnProperty("children")) {
+      const newChildren = []
+      pathArrayToColumns(child.children, newPath, newChildren, inputData)
+      column.children = newChildren
+    }
+    else {
+      column.dataIndex = newPath
+      column.render = (text, record, index) => {
+        if(typeof text != 'undefined' && text !== null){
+          return <p>{text}</p>
+        } 
+        else{
+          return listToTableItem(child, newPath, record )
+        } 
+
+    
+      }
+    } 
+
+    columns.push(column)
+  }
+}
+
+const listToTableItem = (treeItem, path, data) => {
+  const rawValues = getRootValue(path, data)
+  return createRecusiveList(rawValues)
+
+}
+
+const createRecusiveList = (data) => {
+
+  if(Array.isArray(data)){
+    return(
+      <List itemLayout="horizontal" dataSource={data} 
+        renderItem={dataItem => createRecusiveList(dataItem) }
+      />
+    )
+  } 
+  else return (
+    <p>{data}</p>
+  )
+
+
+}
+
  
- return columns;
+export const treeNodeToColumn = (treeNode, inputData) => {
+
+  const columns = []
+  let children = []
+  if(!treeNode.hasOwnProperty("children")) children.push(treeNode)
+  else children = treeNode.children
+  pathArrayToColumns(children, [], columns, inputData) 
+  return columns
+ 
 };
  
-// TODO this can be changed so that column is an attribute of the return of queryToTree
-const treeNodeToColumnRecursive = (tree, columns, path) => {
- for (let treeNode of tree) {
-   const newPath = [...path];
-   newPath.push(treeNode.title);
-   if (treeNode.hasOwnProperty('children')) {
-     const treeNodeColumns = treeNodeToColumn(treeNode);
-     columns.push({
-       title: treeNode.title,
-       dataIndex: newPath,
-       render: (text) => {
-         return <Table columns={treeNodeColumns} dataSource={text} />;
-       },
-     });
-   } else columns.push({ title: treeNode.title, dataIndex: newPath });
- }
-};

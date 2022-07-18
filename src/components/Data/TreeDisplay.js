@@ -2,7 +2,7 @@ import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil"
 import { draggedTreeJSONNodeHook, draggedTreeNodeHook, inputDataHook, popupFieldHook, treeHook } from "../../util/Atoms"
 import React, { useState } from "react"
 import { Tree, Modal, Table, Input } from 'antd';
-import { treeNodeToColumn } from "../../util/toColumn";
+import { pathToColumn } from "../../util/toColumn";
 import { TableDisplay } from "./TableDisplay";
 import { pathToJSON } from "../../util/toJSON";
 
@@ -12,6 +12,8 @@ export const TreeDisplay = () => {
     const [draggedTreeJSONNode, setDraggedTreeJSONNode] = useRecoilState(draggedTreeJSONNodeHook);
     const inputData = useRecoilValue(inputDataHook)
     const [popupField, setPopupField] = useRecoilState(popupFieldHook)
+    const [columns, setColumns] = useState([])
+
 
     return (
         <>
@@ -23,7 +25,7 @@ export const TreeDisplay = () => {
                 footer={null}
             >
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <TableDisplay height={"50vh"} columns={treeNodeToColumn(draggedTreeNode)} dataSource={draggedTreeJSONNode} style={{width: '50%', marginBottom: 20 }}/>
+                    <TableDisplay height={"50vh"} columns={columns} dataSource={draggedTreeJSONNode} style={{width: '50%', marginBottom: 20 }}/>
                     <div style={{ width: "50%", height:'100%' }}>
                         {popupField}
                     </div>
@@ -33,7 +35,9 @@ export const TreeDisplay = () => {
             <Tree treeData={tree} draggable style={{ height: '100%', overflow: 'scroll' }} 
                 onDragStart={({ event, node }) => {
                     setDraggedTreeNode(node);
-                    setDraggedTreeJSONNode(pathToJSON(node.key, inputData));
+                    const draggedTreeJsonNodeData = pathToJSON(node.key, inputData)
+                    setColumns(pathToColumn(node.key ?? "", tree, draggedTreeJsonNodeData))
+                    setDraggedTreeJSONNode(draggedTreeJsonNodeData);
                 }}
             
             />

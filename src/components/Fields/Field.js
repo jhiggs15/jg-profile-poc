@@ -30,7 +30,6 @@ export const Field = ({sectionTitle, title, defaultValue}) => {
        autoSize={{ minRows: 2, maxRows: 5 }}
        onDragOver={(event) => { event.stopPropagation(); event.preventDefault();}} 
        onDrop={(event) => {
-        console.log(draggedTreeJSONNode)
         if(!isObject(draggedTreeJSONNode)) 
           update(draggedTreeJSONNode);
         else 

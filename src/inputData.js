@@ -1389,6 +1389,43 @@ export const inputData = {
               "__typename": "PreviousWorkEmployeeConnection"
             },
             "__typename": "PreviousWork"
+          },
+          {
+            "companyName": "NYS Comptrollers Office",
+            "usesSkillConnection": {
+              "edges": [
+                {
+                  "node": {
+                    "name": "Oracle Database",
+                    "category": [
+                      {
+                        "value": "Data",
+                        "__typename": "SkillTag"
+                      }
+                    ],
+                    "__typename": "Skill"
+                  },
+                  "rating": 1,
+                  "__typename": "PreviousWorkUsesSkillRelationship"
+                }
+              ],
+              "__typename": "PreviousWorkUsesSkillConnection"
+            },
+            "employeeConnection": {
+              "edges": [
+                {
+                  "description": "Designed and created fact and dimension tables for retirement plan data warehouse",
+                  "location": "Albany, NY",
+                  "startDate": "2014",
+                  "endDate": "2015",
+                  "sector": "public",
+                  "role": "Information Technology Specialist II",
+                  "__typename": "PreviousWorkEmployeeRelationship"
+                }
+              ],
+              "__typename": "PreviousWorkEmployeeConnection"
+            },
+            "__typename": "PreviousWork"
           }
         ],
         "__typename": "Person"

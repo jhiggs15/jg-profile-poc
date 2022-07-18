@@ -1,8 +1,9 @@
 import { atom } from 'recoil';
-import { queryToTree, removeIgnoresFromInputData } from './toTree';
+import { queryToTree } from './toTree';
 import { getUser } from '../getUserQuery';
 import {inputData} from "../inputData"
 import { autofillTemplate } from '../templateStructure';
+import { removeIgnoresFromInputData } from './TrimInputData';
  
 const newInputData = removeIgnoresFromInputData(inputData)
 

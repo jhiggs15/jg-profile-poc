@@ -9,6 +9,7 @@ import { SkillsDisplay } from '../components/Data/SkillsDisplay';
 import { ShowDataSection } from '../components/Sections/ShowDataSection';
 import { TransferSection } from '../components/Sections/TransferSection';
 import { pathToJSON } from '../util/toJSON';
+import { List } from 'antd';
  
 
 
@@ -84,14 +85,13 @@ export const Test = () => {
  const inputData = useRecoilValue(inputDataHook)
  const tree = useRecoilValue(treeHook)
  const draggedNode = useRecoilValue(draggedTreeJSONNodeHook)
-
-
-
- console.log(inputData)
- 
+ const item = [["Hello1a", "Hello1b"], ["Hello2a", "Hello2b"], ["Hello3a", "Hello3b"],]
  return <>
-   {createSections(templateStructure, inputData)}
-   {JSON.stringify(section)}
+  <List bordered dataSource={item} itemLayout="vertical"
+    renderItem={item2=> <List bordered dataSource={item2} renderItem={item3 => <List.Item> {item3} </List.Item>}  > </List>}/>
+
+   {/* {createSections(templateStructure, inputData)} */}
+   {/* {JSON.stringify(section)} */}
 
  </>;
 };

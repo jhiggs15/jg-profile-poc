@@ -1,78 +1,10 @@
-import { isObject } from "./toColumn"
+import { pathToArray } from "./toJSON";
 
 // ignores the key completely and doesnt attempt to dril down
 const ignoreCompletely = ['__typename', ];
 // ignores the key but can drill down further if its an object
 const ignorePartially = ['edges', 'node'];
 
-
-export const removeIgnoresFromInputData = (inputData) => {
-  let data = {}
-  removeIgnoresFromInputDataRecursive(inputData, data)
-  return data
-}
-
-export const removeIgnoresFromInputDataRecursive = (dataLeft, parentData) => {
-  let curIndex
-  if(Array.isArray(parentData)) curIndex = parentData.length
-  for(let attributeName of Object.keys(dataLeft)) {
-    const attributeData = dataLeft[attributeName]
-    // if its an edge then forget about the edge attribute and 
-    // set the parent to be all the edges contents
-    if(attributeName == '__typename') return
-    if (attributeName == 'edges') {
-      attributeData.forEach(edgeItem => {
-        let currentAttributesData = {}
-        removeIgnoresFromInputDataRecursive(edgeItem, currentAttributesData)
-        parentData.push(currentAttributesData)
-      })
-      // it should end here since there is never an attribute with an edge
-      return 
-    }
-    else if(attributeName == 'node') {
-      removeIgnoresFromInputDataRecursive(attributeData, parentData)
-    }
-    else if(isObject(attributeData)) {
-      if(Array.isArray(attributeData)) {
-        let currentAttributesData = []
-        attributeData.forEach(item => {
-          removeIgnoresFromInputDataRecursive(item, currentAttributesData)
-        })
-        parentData[attributeName] = currentAttributesData
-      }
-      else {
-        let currentAttributesData
-
-        if(Object.keys(attributeData).includes("edges"))
-          currentAttributesData = []
-        else currentAttributesData = {}
-
-        if(typeof curIndex != "undefined") {
-          removeIgnoresFromInputDataRecursive(attributeData, currentAttributesData)
-          parentData[curIndex][attributeName] = currentAttributesData
-        }
-        else {
-          removeIgnoresFromInputDataRecursive(attributeData, currentAttributesData)
-          parentData[attributeName] = currentAttributesData
-        }
-
-      }     
-    }
-    else {
-      if(Array.isArray(parentData)) {
-        if(parentData.length == curIndex) {
-          parentData.push({[attributeName] : attributeData})
-        }
-        else parentData[curIndex] = {...parentData[curIndex], [attributeName] : attributeData} 
-      } 
-      else parentData[attributeName] = attributeData
-    }
-  }
-  return
-  
-
-
-}
 
 /**
  * Converts apollo gql query to a tree item
@@ -146,38 +78,34 @@ const queryToTreeRecursive = (children, parentListOfChildren, pathToParent) => {
 };
 
 
-/* 
-export const findTreeItem = (treeLeft, pathArray) => {
-  let minMatchingTreeItem ={}
+export const pathToTreeItem = (path, tree) => {
+  return pathArrayToTreeItem(pathToArray(path), tree)
+}
+
+export const pathArrayToTreeItem = (pathArray, treeLeft ) => {
   // iterate through whats left of the tree
   for(let treeItem of treeLeft) {
-      let isMatchReturn = isMatch(pathArray, treeItem.key)
-      if(isMatchReturn == 'partial'){
-          minMatchingTreeItem = treeItem
-      } 
-      else if(isMatchReturn == 'complete') return treeItem
+    let isMatchReturn = isMatch(pathArray, treeItem.key)
+    if(isMatchReturn == 'partial'){
+      pathArray.shift()
+      return pathArrayToTreeItem(pathArray, treeItem.children)
+    }
+    else if(isMatchReturn == 'complete') return treeItem
   }
 
-
-  return findTreeItem(minMatchingTreeItem.children, pathArray)
-
-
+  
 }
 
 const isMatch = (pathArray, currentPath) => {
-  let foundIndex = -1
-  // TODO can optimize this to not loop thru every time
-  let index = 0
+  let isPartial = false
+  let isFull = true
   for(let pathItem of pathArray) {
-      if(currentPath.match(pathItem)) foundIndex = index
-      else break;
-      index++
-
+    let stringMatch = currentPath.match(pathItem)
+    isPartial = isPartial || stringMatch
+    isFull = isFull && stringMatch
   }
-  if(foundIndex == -1) return "none"
-  if(foundIndex == pathArray.length - 1) return "complete"
-  else return "partial"
 
+  if(isFull) return "complete"
+  else if(isPartial) return "partial"
+  else return "none"
 }
-
- */

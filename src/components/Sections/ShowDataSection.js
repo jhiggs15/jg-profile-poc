@@ -19,13 +19,11 @@ export const ShowDataSection = ({title, schema, pathsToDisplay}) => {
     const [showData, setShowData] =  useState(true)
     const[curIndex, setCurIndex] = useState(0)
     
-    const columns = pathsToDisplay.map(path => treeNodeToColumn(tree.find(treeItem => treeItem.key == path)) )
+    const columns = pathsToDisplay.map(path => treeNodeToColumn(tree.find(treeItem => treeItem.key == path), inputData) )
     const data = pathsToDisplay.map(path => {
-        console.log(path)
         return pathToJSON(path, inputData)
     })
 
-    console.log(data)
 
   
     const createSectionFields = () => {
