@@ -23,6 +23,11 @@ export const draggedTreeJSONNodeHook = atom({
   default: {}
 })
 
+export const clipboardHook = atom({
+  key: 'clipboardHook',
+  default: ""
+})
+
 
 export const inputDataHook = atom({
  key: 'inputData',

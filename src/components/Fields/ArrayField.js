@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { draggedTreeJSONNodeHook, popupFieldHook, sectionStateHook, treeHook } from '../../util/Atoms';
-import { useRecoilState } from 'recoil';
-import { Input, Button } from 'antd';
+import { clipboardHook, draggedTreeJSONNodeHook, popupFieldHook, sectionStateHook, treeHook } from '../../util/Atoms';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { Input, Button, message } from 'antd';
 import { isObject } from '../../util/toColumn';
 
 // TODO setting state may be able to be simplified
@@ -10,6 +10,7 @@ const ArraySubItem = ({ sectionTitle, title, index, field }) => {
   const [section, setSection] = useRecoilState(sectionStateHook);
   const [draggedTreeJSONNode, setDraggedTreeJSONNode] = useRecoilState(draggedTreeJSONNodeHook);
   const [popupField, setPopupField] = useRecoilState(popupFieldHook)
+  const clipboard = useRecoilValue(clipboardHook)
 
 
   const createSelf = (sectionTitle, title, index, field) => {
@@ -34,6 +35,21 @@ const ArraySubItem = ({ sectionTitle, title, index, field }) => {
     newSection[sectionTitle] = newSectionItem;
     setSection(newSection);
   };
+
+  /*
+  newSection[sectionTitle] = {...newSection[sectionTitle], [title] : newSection[sectionTitle][title] == "" ? newValue : `${newSection[sectionTitle][title]} ${newValue}`}
+
+  */
+  const append = (newValue) => {
+    const newSection = { ...section };
+    const newSectionItem = { ...newSection[sectionTitle] };
+    const newArray = [...newSectionItem[title]];
+    const newArrayItem = { ...newArray[index], [field]: newArray[index][field] == "" ? newValue : `${newArray[index][field]} ${newValue}`};
+    newArray[index] = newArrayItem;
+    newSectionItem[title] = newArray;
+    newSection[sectionTitle] = newSectionItem;
+    setSection(newSection);
+  };
   
   const getValue = () => {
     if(typeof section[sectionTitle] == 'undefined') return ""
@@ -43,8 +59,16 @@ const ArraySubItem = ({ sectionTitle, title, index, field }) => {
     return section[sectionTitle][title][index][field]
   }
 
+  const rightClick = (event) => {
+    event.preventDefault()
+    if(event.ctrlKey) update(clipboard)
+    else append(clipboard)
+    message.success("Pasted from Internal Clipboard!", .5)
+   }
+  
+
   return (
-    <Input.TextArea value={getValue()} onChange={(event) => update(event.target.value)} autoSize={{ minRows: 2, maxRows: 5 }}
+    <Input.TextArea onContextMenu={rightClick} value={getValue()} onChange={(event) => update(event.target.value)} autoSize={{ minRows: 2, maxRows: 5 }}
       onDragOver={(event) => { event.stopPropagation(); event.preventDefault();}} 
       onDrop={(event) => {
       const keys = Object.keys(draggedTreeJSONNode);

@@ -6,7 +6,7 @@ import { useRecoilValue, useRecoilState } from "recoil";
 import {TreeDisplay} from "../Data/TreeDisplay"
 import { Button, Dropdown, Menu, Space, Typography } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { TableDisplay } from "../Data/TableDisplay";
+import { TableDisplay } from "../Data/Table/TableDisplay";
 import { treeNodeToColumn } from "../../util/toColumn";
 import { pathToJSON, treeToJSON } from "../../util/toJSON";
 

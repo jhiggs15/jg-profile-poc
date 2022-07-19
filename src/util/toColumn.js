@@ -1,5 +1,6 @@
 
-import { Table, List } from 'antd';
+import { Table, List, Typography, message } from 'antd';
+import { TableItem } from '../components/Data/Table/TableItem';
 import { getRootValue } from './toJSON';
 import { pathToTreeItem } from './toTree';
 
@@ -20,13 +21,7 @@ export const pathToColumn = (path, tree, inputData) => {
 }
 
 
-/*
-  - cycle through children
-  - if the child has children 
-    - add it to the children field
-  - if it does not attach a dataindex
-  -   if it does not and its an array?
-*/
+
 
 const pathArrayToColumns = (listOfNodes, path, columns, inputData) => {
   for(let child of listOfNodes) {
@@ -41,7 +36,7 @@ const pathArrayToColumns = (listOfNodes, path, columns, inputData) => {
       column.dataIndex = newPath
       column.render = (text, record, index) => {
         if(typeof text != 'undefined' && text !== null){
-          return <p>{text}</p>
+          return <TableItem text={text}/>
         } 
         else{
           return listToTableItem(child, newPath, record )
@@ -71,7 +66,7 @@ const createRecusiveList = (data) => {
     )
   } 
   else return (
-    <p>{data}</p>
+    <TableItem text={data} />
   )
 
 

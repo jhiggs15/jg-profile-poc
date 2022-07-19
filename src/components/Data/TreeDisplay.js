@@ -3,7 +3,7 @@ import { draggedTreeJSONNodeHook, draggedTreeNodeHook, inputDataHook, popupField
 import React, { useState } from "react"
 import { Tree, Modal, Table, Input } from 'antd';
 import { pathToColumn } from "../../util/toColumn";
-import { TableDisplay } from "./TableDisplay";
+import { TableDisplay } from "./Table/TableDisplay";
 import { pathToJSON } from "../../util/toJSON";
 
 export const TreeDisplay = () => {
