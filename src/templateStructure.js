@@ -41,6 +41,7 @@ export const templateStructure = {
       degree: ".attendedConnection.degreeName"
     }
    },
+   // do this within field object
    schema: {
      name: '',
      title: '',

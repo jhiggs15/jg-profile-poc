@@ -18,7 +18,7 @@ const iterateWorkData = (workDatas, workDataAttribute, companyNameAttribute, ski
         for(let skill of workData[skillsAttribute]) {
             let foundSkill = map.get(skill.name)
             if(typeof foundSkill == 'undefined') foundSkill = createNewSkillItem(skill.name, skill.rating, skill.category[0].value, map)
-            if(foundSkill.source[0] == "None"){
+            if(foundSkill.source[0] == "Skill Assesment"){
                 foundSkill.source = [workDataAttribute]
                 foundSkill.experience = [name]
             } 
@@ -36,7 +36,7 @@ const iterateWorkData = (workDatas, workDataAttribute, companyNameAttribute, ski
 
 const ratingToString = (rating) => {
     if(rating <= 1) return "Knowlegeable"
-    else if(rating == 2) return "Knowlegeable"
+    else if(rating == 2) return "Proficient"
     else if(rating >= 3) return "Lead/Teach"
 
 }
@@ -44,8 +44,8 @@ const ratingToString = (rating) => {
 const createNewSkillItem = (name, rating, category, map) => {
     const skill = {name, rating, category}
     skill.key = name
-    skill.source =["None"] 
-    skill.experience = ["None"]
+    skill.source =["Skill Assesment"] 
+    skill.experience = ["Skill Assesment"]
     map.set(name, skill)
     return skill
 }
@@ -283,7 +283,7 @@ export const SkillsDisplay = ({allSkills, JGProjects, prevWork, sectionItemKey, 
         else experienceSet.add(item.experience)
     })
     const experienceFilterItems = Array.from(experienceSet).map(item =>({text: item, value: item}) )
-    const sourceFilterItems = ["JG Project", "Previous Work", "Some Experience", "None"].map(item =>({text: item, value: item}) )
+    const sourceFilterItems = ["JG Project", "Previous Work", "Some Experience", "Skill Assesment"].map(item =>({text: item, value: item}) )
 
 
 
