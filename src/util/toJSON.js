@@ -45,6 +45,7 @@ export const pathArrayToJSON = (pathArray, inputData) => {
     return currentData
 }
 
+
 export const getRootValue = (pathArray, data) => {
     let currentData = data
     for(let pathItem of pathArray) {

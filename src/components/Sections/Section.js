@@ -3,7 +3,7 @@ import { ArrayField } from "../Fields/ArrayField";
 import { Field } from "../Fields/Field";
 import { inputDataHook, sectionStateHook } from "../../util/Atoms";
 import { useRecoilValue, useRecoilState } from "recoil";
-import {TreeDisplay} from "../Data/TreeDisplay"
+import { TreeDisplay } from "../Data/Tree/TreeDisplay";
  
 export const Section = ({title, schema}) => {
    const inputData = useRecoilValue(inputDataHook)

@@ -1,10 +1,11 @@
 import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from "recoil"
-import { draggedTreeJSONNodeHook, draggedTreeNodeHook, inputDataHook, popupFieldHook, treeHook } from "../../util/Atoms"
+import { draggedTreeJSONNodeHook, draggedTreeNodeHook, inputDataHook, popupFieldHook, treeHook } from "../../../util/Atoms"
 import React, { useState } from "react"
 import { Tree, Modal, Table, Input } from 'antd';
-import { pathToColumn } from "../../util/toColumn";
-import { TableDisplay } from "./Table/TableDisplay";
-import { pathToJSON } from "../../util/toJSON";
+import { pathToColumn } from "../../../util/toColumn";
+import { TableDisplay } from "../Table/TableDisplay";
+import { getRootValue, pathToArray, pathToJSON } from "../../../util/toJSON";
+import { createTreeItem } from "./TreeItem";
 
 export const TreeDisplay = () => {
     const tree = useRecoilValue(treeHook)
@@ -13,7 +14,6 @@ export const TreeDisplay = () => {
     const inputData = useRecoilValue(inputDataHook)
     const [popupField, setPopupField] = useRecoilState(popupFieldHook)
     const [columns, setColumns] = useState([])
-
 
     return (
         <>
@@ -32,7 +32,7 @@ export const TreeDisplay = () => {
                 </div>
             </Modal>
 
-            <Tree treeData={tree} draggable style={{ height: '100%', overflow: 'scroll' }} 
+            <Tree titleRender={(node) => createTreeItem(node, inputData)} treeData={tree} draggable style={{ height: '100%', overflow: 'scroll' }} 
                 onDragStart={({ event, node }) => {
                     setDraggedTreeNode(node);
                     const draggedTreeJsonNodeData = pathToJSON(node.key, inputData)

@@ -25,7 +25,7 @@ export const Field = ({sectionTitle, title, defaultValue}) => {
 
  const append = (newValue) => {
   const newSection = {...section}
-  newSection[sectionTitle] = {...newSection[sectionTitle], [title] : newSection[sectionTitle][title] == "" ? newValue : `${newSection[sectionTitle][title]} ${newValue}`}
+  newSection[sectionTitle] = {...newSection[sectionTitle], [title] : newSection[sectionTitle][title] == "" ? newValue : `${newSection[sectionTitle][title]}${newValue}`}
   setSection(newSection)
 }
 
@@ -35,9 +35,6 @@ const rightClick = (event) => {
   else append(clipboard)
   message.success("Pasted from Internal Clipboard!", .5)
  }
-
-
-
 
  return (
    <div>

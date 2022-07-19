@@ -3,12 +3,12 @@ import { ArrayField } from "../Fields/ArrayField";
 import { Field } from "../Fields/Field";
 import { inputDataHook, sectionStateHook, treeHook } from "../../util/Atoms";
 import { useRecoilValue, useRecoilState } from "recoil";
-import {TreeDisplay} from "../Data/TreeDisplay"
 import { Button, Dropdown, Menu, Space, Typography } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { TableDisplay } from "../Data/Table/TableDisplay";
 import { treeNodeToColumn } from "../../util/toColumn";
 import { pathToJSON, treeToJSON } from "../../util/toJSON";
+import { TreeDisplay } from "../Data/Tree/TreeDisplay";
 
 
 export const ShowDataSection = ({title, schema, pathsToDisplay}) => {

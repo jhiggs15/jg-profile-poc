@@ -3,15 +3,13 @@ import { Table, List, Typography, message } from 'antd';
 import { TableItem } from '../components/Data/Table/TableItem';
 import { getRootValue } from './toJSON';
 import { pathToTreeItem } from './toTree';
+import React from 'react';
 
 export const isObject = (item) => typeof item == 'object' && item !== null;
 
 export const pathToColumn = (path, tree, inputData) => {
-  console.log(path)
   const columns = []
   const treeItem = pathToTreeItem(path, tree)
-  console.log(treeItem)
-  console.log(inputData)
   let children = []
   if(!treeItem.hasOwnProperty("children")) children.push(treeItem)
   else children = treeItem.children

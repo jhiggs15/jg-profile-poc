@@ -44,7 +44,7 @@ const ArraySubItem = ({ sectionTitle, title, index, field }) => {
     const newSection = { ...section };
     const newSectionItem = { ...newSection[sectionTitle] };
     const newArray = [...newSectionItem[title]];
-    const newArrayItem = { ...newArray[index], [field]: newArray[index][field] == "" ? newValue : `${newArray[index][field]} ${newValue}`};
+    const newArrayItem = { ...newArray[index], [field]: newArray[index][field] == "" ? newValue : `${newArray[index][field]}${newValue}`};
     newArray[index] = newArrayItem;
     newSectionItem[title] = newArray;
     newSection[sectionTitle] = newSectionItem;
