@@ -58,22 +58,10 @@ const createSections = (templateStructure, inputData) => {
          <Section title={section.sectionTitle} schema={section.schema} />
        )
     case 'ShowData':
-      return
       console.log(section)
       return <ShowDataSection title={section.sectionTitle} schema={section.schema} pathsToDisplay={section.options.ShowData} />
     case 'SkillSection':
-      console.log(section)
-      return <SkillSection title={section.sectionTitle} options={section.options.SkillSection} schema={section.schema} />
-      const skillData = section.options.skillData
-      const allSkills = pathToJSON(skillData.allSkills.path, inputData)
-      const JGSkills = pathToJSON(skillData.JGProjectSkills.path, inputData)
-      const prevWorkSkills = pathToJSON(skillData.prevWorkSkills.path, inputData)
-      return (
-        <SkillsDisplay allSkills={allSkills} sectionItemKey={section.options.schemaItemKey} sectionTitle={sectionTitle} title={Object.keys(section.schema)[0]} 
-          JGProjects={{companyName: skillData.JGProjectSkills.companyName, skills: skillData.JGProjectSkills.skills, data: JGSkills}} 
-          prevWork={{companyName: skillData.prevWorkSkills.companyName, skills: skillData.prevWorkSkills.skills, data: prevWorkSkills}} 
-        />
-      )
+      // return <SkillSection title={section.sectionTitle} options={section.options.SkillSection} schema={section.schema} />
      default:
     
    }

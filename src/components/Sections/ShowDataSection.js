@@ -6,86 +6,85 @@ import { useRecoilValue, useRecoilState } from "recoil";
 import { Button, Dropdown, Menu, Space, Typography } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { TableDisplay } from "../Data/Table/TableDisplay";
-import { treeNodeToColumn } from "../../util/toColumn";
+import { pathToColumn, treeNodeToColumn } from "../../util/toColumn";
 import { pathToJSON, treeToJSON } from "../../util/toJSON";
 import { TreeDisplay } from "../Data/Tree/TreeDisplay";
 
 
 export const ShowDataSection = ({title, schema, pathsToDisplay}) => {
-    const inputData = useRecoilValue(inputDataHook)
-    const tree = useRecoilValue(treeHook)
-    const [section, setSection] = useRecoilState(sectionStateHook)
-    // when true shows data, when false shows tree
-    const [showData, setShowData] =  useState(true)
-    const[curIndex, setCurIndex] = useState(0)
-    
-    const columns = pathsToDisplay.map(path => treeNodeToColumn(tree.find(treeItem => treeItem.key == path), inputData) )
-    const data = pathsToDisplay.map(path => {
-        return pathToJSON(path, inputData)
-    })
 
+  const tree = useRecoilValue(treeHook)
+  const inputData = useRecoilValue(inputDataHook)
+  const [showData, setShowData] =  useState(true)
+  const[curIndex, setCurIndex] = useState(0)
 
-  
-    const createSectionFields = () => {
-        return Object.keys(schema).map((fieldName) => {
-          const field = schema[fieldName];
-          if (Array.isArray(field))
-            return <ArrayField sectionTitle={title} title={fieldName} templateItem={field[0]} />;
-          else {
-            return <Field defaultValue={inputData[fieldName] ?? ""} sectionTitle={title} title={fieldName} />;
+  const columns = pathsToDisplay.map(path => pathToColumn(path, tree, inputData) )
+  const data = pathsToDisplay.map(path => pathToJSON(path, inputData))
+
+  const renderData = () => {
+    if(showData) return <TableDisplay style={{maxWidth: "50%"}} height={"50vh"} columns={columns[curIndex]} dataSource={data[curIndex]} />
+    else return <TreeDisplay />
+  }
+
+  const menu = (
+    <Menu onSelect={(info) => setCurIndex(info.key)}
+      selectable
+      defaultSelectedKeys={['0']}
+      items={pathsToDisplay.map((path, index) => {
+          return {
+              key: index,
+              label: path.replace(".", "")
           }
-        });
-    };
-// columns={columns[curIndex]} dataSource={data[curIndex]}
-    const renderData = () => {
-        if(showData) return <TableDisplay style={{maxWidth: "50%"}} height={"50vh"} columns={columns[curIndex]} dataSource={data[curIndex]} />
-        else return <TreeDisplay />
+      })}
+    />
+  );
 
-    }
+  const createSectionFields = () => {
+    const sectionDataTitle = Object.keys(schema)[0]
+    const sectionSchema = schema[sectionDataTitle].schema
 
-    const menu = (
-        <Menu onSelect={(info) => setCurIndex(info.key)}
-        selectable
-        defaultSelectedKeys={['0']}
-        items={pathsToDisplay.map((path, index) => {
-            return {
-                key: index,
-                label: path.replace(".", "")
-            }
-        })}
-      />
-    );
+    const arrayTitle = Object.keys(sectionSchema)[0]
+    const arrayObject = sectionSchema[arrayTitle]
+    const arrayMaxLength = arrayObject.maxLength
+    const arraySchema  =  arrayObject.schema
 
-    return(
-        <div>
-          <Button onClick={() => setShowData(!showData)} > 
-            {showData ? "Tree View" : "Table View" }
-          </Button>
-          {showData ? 
-            <Dropdown overlay={menu}>
-                <Typography.Link>
-                    <Space>
-                        Table Choices
-                        <DownOutlined />
-                    </Space>
-                </Typography.Link>
-             </Dropdown>
-            :
-            null
-          }
+    if(arrayObject.type !== "Array") return <h1>Cannot render Fields in show data section only arrays where each element has a single attribuite</h1>
 
+    const fieldName = Object.keys(arraySchema)[0]
+    const fieldObject = arraySchema[fieldName]
+    const fieldMaxLength = fieldObject.maxLength
 
+    return <ArrayField sectionDataTitle={sectionDataTitle} arrayTitle={arrayTitle} arrayMaxLength={arrayMaxLength} fieldName={fieldName} fieldMaxLength={fieldMaxLength}  />
 
+};
 
-          <div style={{display: "flex", flexDirection: "row"}}>
-            {renderData()}
-            <div style={{width: "100%"}}>
-                <h1 style={{textAlign: "center"}}>{title}</h1>
-                {createSectionFields()}
-            </div>
-          </div>
+  return (
+    <div>
+      <h1 style={{textAlign: "center"}}>{title}</h1>
+      <Button onClick={() => setShowData(!showData)} > 
+        {showData ? "Tree View" : "Table View" }
+      </Button>
+      {showData ? 
+        <Dropdown overlay={menu}>
+            <Typography.Link>
+                <Space>
+                    Table Choices
+                    <DownOutlined />
+                </Space>
+            </Typography.Link>
+          </Dropdown>
+        :
+        null
+      }
+
+      <div style={{display: "flex", flexDirection: "row"}}>
+        {renderData()}
+        <div style={{width: "100%"}}>
+          {createSectionFields()}
+          {/* <h1 style={{textAlign: "center"}}>{title}</h1> */}
         </div>
-
-       )
-
+      </div>
+    </div>
+  )
+  
 }

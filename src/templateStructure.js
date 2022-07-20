@@ -85,11 +85,11 @@ export const newTemplateStrucutre = [
         schema: {
           experienceList : {
             type: "Array",
-            maxLength: 10,
+            maxLength: 4,
             schema: {
               experienceItem: {
                 type: "Field",
-                maxLength: 20
+                maxLength: 250
               }
             }
           }

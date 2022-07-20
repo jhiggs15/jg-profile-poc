@@ -14,7 +14,6 @@ export const Section = ({title, schema}) => {
     const sectionSchema = schema[sectionDataTitle].schema
     return Object.keys(sectionSchema).map(fieldName => {
       const field = sectionSchema[fieldName];
-      console.log(field)
       if (Array.isArray(field)) return (<h1>Need to reimplement array field in section</h1>)
         // return <ArrayField sectionTitle={title} title={fieldName} templateItem={field[0]} />;
       else {
