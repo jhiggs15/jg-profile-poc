@@ -13,35 +13,22 @@ import { useRecoilValue, useRecoilState } from 'recoil';
 import { Section } from '../../components/Sections/Section';
 import { ShowDataSection } from '../../components/Sections/ShowDataSection';
 import { TransferSection } from '../../components/Sections/TransferSection';
-import { templateStructure } from '../../templateStructure';
+import { newTemplateStrucutre } from '../../templateStructure';
 import { SkillsDisplay } from '../../components/Data/SkillsDisplay';
 import { pathToJSON } from '../../util/toJSON';
+import { SkillSection } from '../../components/Sections/SkillSection';
 
-const createSections = (templateStructure, inputData) => {
-  return Object.keys(templateStructure).map((sectionTitle) => {
-    const section = templateStructure[sectionTitle];
-    // create sections here
+const createSections = (templateStructure) => {
+  return templateStructure.map(section => {
     switch (section.type) {
       case 'Section':
-        return (
-          <Section title={sectionTitle} schema={section.schema} />
-        )
-      case 'ShowData':
-       return <ShowDataSection title={sectionTitle} schema={section.schema} pathsToDisplay={section.options.show} />
-      case 'Transfer':
-       return <TransferSection title={sectionTitle} schema={section.schema} transfer={section.options.transfer} />
-      case 'Skills':
-        const skillData = section.options.skillData
-        const allSkills = pathToJSON(skillData.allSkills.path, inputData)
-        const JGSkills = pathToJSON(skillData.JGProjectSkills.path, inputData)
-        const prevWorkSkills = pathToJSON(skillData.prevWorkSkills.path, inputData)
-        return (
-          <SkillsDisplay allSkills={allSkills} sectionItemKey={section.options.schemaItemKey} sectionTitle={sectionTitle} title={Object.keys(section.schema)[0]} 
-            JGProjects={{companyName: skillData.JGProjectSkills.companyName, skills: skillData.JGProjectSkills.skills, data: JGSkills}} 
-            prevWork={{companyName: skillData.prevWorkSkills.companyName, skills: skillData.prevWorkSkills.skills, data: prevWorkSkills}} 
-          />
-        )
+        return <Section title={section.sectionTitle} schema={section.schema} />
+     case 'ShowData':
+       return <ShowDataSection title={section.sectionTitle} schema={section.schema} pathsToDisplay={section.options.ShowData} />
+     case 'SkillSection':
+       return <SkillSection title={section.sectionTitle} options={section.options.SkillSection} schema={section.schema} />
       default:
+     
     }
   });
  };
@@ -71,7 +58,7 @@ export const CreateProfile = (props) => {
       });
   };
 
-  const dataSections = createSections(templateStructure, inputData)
+  const dataSections = createSections(newTemplateStrucutre)
 
   const renderStep = () => {
     const steps = [

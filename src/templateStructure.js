@@ -1,33 +1,50 @@
 import { useRecoilValue } from "recoil"
+import { inputData } from "./inputData"
 import { inputDataHook } from "./util/Atoms"
 import { pathToArray, pathToJSON } from "./util/toJSON"
  
- 
-export const autofillTemplate = (inputData) => {
- let newSection = {}
- Object.keys(templateStructure).forEach(sectionItemName => {
-   const sectionItem = templateStructure[sectionItemName]
-   let newSectionContent = {...sectionItem.schema}
-   if(sectionItem.hasOwnProperty('options') && sectionItem['options'].hasOwnProperty('autofill')){
-    const autofillOptions = sectionItem['options']['autofill']
-    Object.keys(autofillOptions).forEach(templateItem => {
-      const inputDataPath = autofillOptions[templateItem]
-      let autofillData = pathToJSON(inputDataPath, inputData)
-      if(Array.isArray(autofillData)){
-        autofillData = autofillData[0][pathToArray(inputDataPath).pop()]
 
-      } 
-      newSectionContent[templateItem] = autofillData
-    })
+const fillTemplateRecursively = (sectionSchema, parentsChildren, inputData) => {
+  Object.keys(sectionSchema).forEach(schemaItemName => {
+    const currentItem = sectionSchema[schemaItemName]
+    if(currentItem.type == "Object") {
+      const currentItemSchema = currentItem.schema
+      const children = {}
+      fillTemplateRecursively(currentItemSchema, children, inputData)
+      parentsChildren[schemaItemName] = children
+    }
+    else if(currentItem.type == "Array") {
+      const currentItemSchema = currentItem.schema
+      const children = {}
+      fillTemplateRecursively(currentItemSchema, children, inputData)
+      parentsChildren[schemaItemName] = [children]
+    }
+    else if(currentItem.type == "Field") {
+      if(currentItem.hasOwnProperty("autofill")) {
+        const pathToData = currentItem.autofill
+        let autofillData = pathToJSON(pathToData, inputData)
+        if(Array.isArray(autofillData)) autofillData = autofillData[0][pathToArray(pathToData).pop()]
+        parentsChildren[schemaItemName] = autofillData
+      }
+      else parentsChildren[schemaItemName] = ""
+    }
 
-   }
-   // TODO left off here need to autofill similar fields if they are not an array
-   newSection[sectionItemName] = newSectionContent
- })
- 
- return newSection
- 
+  }) 
+
+  return parentsChildren
 }
+
+export const autofillTemplate = (inputData) => {
+  const newSection = {}
+  newTemplateStrucutre.forEach(section => {
+    let sectionSchema = section.schema
+
+    fillTemplateRecursively(sectionSchema, newSection, inputData)
+  })
+  return newSection
+}
+ 
+
 
 export const newTemplateStrucutre = [
   {
@@ -129,6 +146,7 @@ export const newTemplateStrucutre = [
             maxLength: 10,
             schema: {
               skillName: {
+                type: "Field",
                 maxLength: 20
               }
             }

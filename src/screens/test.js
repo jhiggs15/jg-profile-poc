@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Field } from '../components/Fields/Field';
 import { ArrayField } from '../components/Fields/ArrayField';
-import { newTemplateStrucutre, templateStructure } from '../templateStructure';
+import { autofillNewTemplate, newTemplateStrucutre, templateStructure } from '../templateStructure';
 import { useRecoilValue } from 'recoil';
 import { draggedTreeJSONNodeHook, sectionStateHook, treeHook,inputDataHook } from '../util/Atoms';
 import { Section } from '../components/Sections/Section';
@@ -48,20 +48,15 @@ const findTreeItem = (treeLeft, pathArray) => {
 
 }
  
-const createSections = (templateStructure, inputData) => {
+const createSections = (templateStructure) => {
  return templateStructure.map(section => {
-   // create sections here
    switch (section.type) {
      case 'Section':
-      return
-       return (
-         <Section title={section.sectionTitle} schema={section.schema} />
-       )
+       return <Section title={section.sectionTitle} schema={section.schema} />
     case 'ShowData':
-      console.log(section)
       return <ShowDataSection title={section.sectionTitle} schema={section.schema} pathsToDisplay={section.options.ShowData} />
     case 'SkillSection':
-      // return <SkillSection title={section.sectionTitle} options={section.options.SkillSection} schema={section.schema} />
+      return <SkillSection title={section.sectionTitle} options={section.options.SkillSection} schema={section.schema} />
      default:
     
    }
@@ -73,9 +68,9 @@ export const Test = () => {
  const inputData = useRecoilValue(inputDataHook)
  const tree = useRecoilValue(treeHook)
  const draggedNode = useRecoilValue(draggedTreeJSONNodeHook)
+
  return <>
  {JSON.stringify(section)}
-  {createSections(newTemplateStrucutre)}
 
  </>;
 };
