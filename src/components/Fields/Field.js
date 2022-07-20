@@ -34,7 +34,7 @@ const rightClick = (event) => {
   event.preventDefault()
   if(event.ctrlKey) update(clipboard)
   else append(clipboard)
-  message.success("Pasted from Internal Clipboard!", .5)
+  message.success("Pasted from Internal Clipboard!", .8)
  }
 
  const showCount = ({count}) =>{

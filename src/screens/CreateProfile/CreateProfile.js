@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Setup } from '../Setup/Setup';
 import { Button, Steps } from 'antd';
 
-import { ScissorOutlined } from '@ant-design/icons';
-import { ChooseDataForTemplate } from '../ChooseDataForTemplate/ChooseDataForTemplate';
+import { ScissorOutlined, SelectOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { Test } from '../test.js';
 import { GeneratePDF } from '../GeneratePDF/GeneratePDF';
 import { createTemplateInfo, createHeaderInfo } from '../../util/PDFMonkeyUtil';
@@ -13,7 +12,7 @@ import { useRecoilValue, useRecoilState } from 'recoil';
 import { Section } from '../../components/Sections/Section';
 import { ShowDataSection } from '../../components/Sections/ShowDataSection';
 import { TransferSection } from '../../components/Sections/TransferSection';
-import { newTemplateStrucutre } from '../../templateStructure';
+import { templateStrucutre } from '../../templateStructure';
 import { SkillsDisplay } from '../../components/Data/SkillsDisplay';
 import { pathToJSON } from '../../util/toJSON';
 import { SkillSection } from '../../components/Sections/SkillSection';
@@ -58,7 +57,7 @@ export const CreateProfile = (props) => {
       });
   };
 
-  const dataSections = createSections(newTemplateStrucutre)
+  const dataSections = createSections(templateStrucutre)
 
   const renderStep = () => {
     const steps = [
@@ -112,9 +111,9 @@ export const CreateProfile = (props) => {
         <Steps style={{ justifyContent: 'center' }}>
           <Steps.Step status={selectDataStatus}
             title="Select Data for Template"
-            icon={<ScissorOutlined />}
+            icon={<SelectOutlined />}
           />
-          <Steps.Step status={selectDataStatus == 'process' ? 'wait' : 'process'} title="Generate PDF" icon={<ScissorOutlined />} />
+          <Steps.Step status={selectDataStatus == 'process' ? 'wait' : 'process'} title="Generate PDF" icon={<FilePdfOutlined />} />
         </Steps>
       </div>
       <div style={{ height: '90vh' }}>{renderStep(stepValue)}</div>

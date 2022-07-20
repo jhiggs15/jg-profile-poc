@@ -56,7 +56,7 @@ const ArraySubItem = ({ sectionDataTitle, arrayTitle, index, fieldName, characte
     event.preventDefault()
     if(event.ctrlKey) update(clipboard)
     else append(clipboard)
-    message.success("Pasted from Internal Clipboard!", .5)
+    message.success("Pasted from Internal Clipboard!", .8)
    }
 
    const showCount = ({count}) =>{
@@ -158,14 +158,8 @@ export const ArrayField = ({ sectionDataTitle, arrayTitle, fieldName, arrayMaxLe
 
   return (
     <div>
-      {getLength() < arrayMaxLength ? 
-        <Button onClick={addItem}>Create Item</Button>
-        :
-        <Tooltip title={`Adding another item exceeds the reccomended length of ${arrayMaxLength}`}>
-          <Button style={{backgroundColor: "red", color: "white"}} onClick={addItem}>Create Item</Button>
-
-        </Tooltip>
-      }
+      <p style={{color: getLength() > arrayMaxLength ? "red": "black"}}>{`${getLength()}/${arrayMaxLength}`}</p>
+      <Button onClick={addItem}>Create Item</Button>
       {getLength() > 0 ? (
         <Button onClick={removeItem}>Remove Last</Button>
       ) : null}

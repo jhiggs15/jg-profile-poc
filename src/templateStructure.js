@@ -36,7 +36,7 @@ const fillTemplateRecursively = (sectionSchema, parentsChildren, inputData) => {
 
 export const autofillTemplate = (inputData) => {
   const newSection = {}
-  newTemplateStrucutre.forEach(section => {
+  templateStrucutre.forEach(section => {
     let sectionSchema = section.schema
 
     fillTemplateRecursively(sectionSchema, newSection, inputData)
@@ -46,7 +46,7 @@ export const autofillTemplate = (inputData) => {
  
 
 
-export const newTemplateStrucutre = [
+export const templateStrucutre = [
   {
     sectionTitle: "General Information",
     type: "Section",
@@ -64,7 +64,7 @@ export const newTemplateStrucutre = [
             title: "Title",
             type: "Field",
             autofill: ".tense_title",
-            maxLength: 30
+            maxLength: 35
           },
           funfact: {
             title: "Fun Fact",
@@ -143,11 +143,11 @@ export const newTemplateStrucutre = [
         schema: {
           skillList : {
             type: "Array",
-            maxLength: 10,
+            maxLength: 15,
             schema: {
               skillName: {
                 type: "Field",
-                maxLength: 20
+                maxLength: 15
               }
             }
           },
@@ -159,61 +159,5 @@ export const newTemplateStrucutre = [
     }
   }
 ]
- 
-export const templateStructure = {
- userinfo: {
-   type: 'Section',
-   options:{
-    autofill: {
-      name: ".name",
-      title: ".tense_title",
-      funfact: ".biography",
-      school: ".attendedConnection.educationName",
-      degree: ".attendedConnection.degreeName"
-    }
-   },
-   // do this within field object
-   schema: {
-     name: '',
-     title: '',
-     funfact: '',
-     school: '',
-     degree: '',
-   },
- },
- experience: {
-   type: 'ShowData',
-   options: {
-    show: [".previousWork", ".nonJGProjects"]
-   },
-   schema: {
-     experienceList: [{ experienceItem: '' }],
-   },
- },
- skills: {
-   type: 'Skills',
-   options : {
-    schemaItemKey: 'skillName',
-    skillData: {
-      allSkills: {
-        path: ".skillsConnection"
-      },
-      JGProjectSkills: {
-        path: ".nonJGProjects",
-        companyName: "projectFullName",
-        skills: "usesSkillConnection"
-      },
-      prevWorkSkills: {
-        path: ".previousWork",
-        companyName: "companyName", // indicates where the attribute of the company name in the object, in case it needs to chang
-        skills: "usesSkillConnection" // indicates where the list of skills are in the object, in case it needs to chang
-      }
-    }
-   },
-   schema: {
-     skillList: [{ skillName: '' }],
-   },
- },
-};
  
 

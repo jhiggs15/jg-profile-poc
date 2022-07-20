@@ -22,7 +22,7 @@ export const ShowDataSection = ({title, schema, pathsToDisplay}) => {
   const data = pathsToDisplay.map(path => pathToJSON(path, inputData))
 
   const renderData = () => {
-    if(showData) return <TableDisplay style={{maxWidth: "50%"}} height={"50vh"} columns={columns[curIndex]} dataSource={data[curIndex]} />
+    if(showData) return <TableDisplay style={{maxWidth: "60%"}} height={"50vh"} columns={columns[curIndex]} dataSource={data[curIndex]} />
     else return <TreeDisplay />
   }
 
@@ -79,7 +79,7 @@ export const ShowDataSection = ({title, schema, pathsToDisplay}) => {
 
       <div style={{display: "flex", flexDirection: "row"}}>
         {renderData()}
-        <div style={{width: "100%"}}>
+        <div style={{ paddingLeft: 20, width: "100%"}}>
           {createSectionFields()}
           {/* <h1 style={{textAlign: "center"}}>{title}</h1> */}
         </div>

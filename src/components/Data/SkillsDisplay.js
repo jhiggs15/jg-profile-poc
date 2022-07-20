@@ -1,6 +1,6 @@
 
 import React, { useRef, useState } from "react"
-import { Table, Tag, Input, Button, Select, List, Space } from 'antd';
+import { Table, Tag, Input, Button, Select, List, Space, Tooltip } from 'antd';
 import { useRecoilState } from "recoil";
 import { sectionStateHook } from "../../util/Atoms";
 import { DeleteOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
@@ -64,45 +64,56 @@ export const combineSkillsData = (allSkills, JGProjects, prevWork) => {
     return Array.from(map.values())    
 }
 
-const InputTag = ({inputValue, setInputValue, setInputVisible, inputVisible, addItem, hasSkill}) => {
-    const isError = hasSkill || inputValue ==""
-    const errorMessage = hasSkill ? "This skill already exists" : (inputValue == "" ? "Cannot add the Empty Skill": "")
+const InputTag = ({inputValue, setInputValue, setInputVisible, inputVisible, addItem, hasSkill, maxLength}) => {
+    const [isError, setIsError] = useState( )
+    const [errorMessage, setErrorMessage] = useState(hasSkill || inputValue =="" )
+    
+    const showCount = ({count}) =>{
+        if(count > maxLength){
+            setIsError(true)
+            setErrorMessage(`The current skill is longer than the reccomended length of ${maxLength}`)
+        } 
+        else{
+            setIsError(hasSkill || inputValue =="")
+            setErrorMessage(hasSkill ? "This skill already exists" : (inputValue == "" ? "Cannot add the Empty Skill": ""))
+        } 
+        return <p>{`${count}/${maxLength}`}</p>
+    } 
+
+    const props = isError ? {title: errorMessage} : null
     return (
         <div style={{display: "flex", justifyContent: "center"}}>
-            {inputVisible && (
-                <div style={{display: "flex"}}>
-                    <Input
-                        status= {isError ? "error" : null}
-                        onBlur={() => setInputVisible(false)}
-                        type="text"
-                        size="small"
-                        style={{ minHeight: 46, width: 100 }}
-                        value={inputValue}
-                        onChange={(event) => setInputValue(event.target.value)}
-                        onPressEnter={() =>{
-                            if(!isError) {
-                                addItem(inputValue);
-                                setInputValue("");
-                                setInputVisible(false)
-                            }
+            <Tooltip {...props}>
+                {inputVisible && (
+                    <div style={{display: "flex"}}>
+                        <Input
+                            showCount={{formatter: showCount}}
+                            status= {isError ? "error" : null}
+                            onBlur={() => setInputVisible(false)}
+                            type="text"
+                            size="small"
+                            style={{ minHeight: 46, width: 100 }}
+                            value={inputValue}
+                            onChange={(event) => setInputValue(event.target.value)}
+                            onPressEnter={() =>{
+                                if(!isError) {
+                                    addItem(inputValue);
+                                    setInputValue("");
+                                    setInputVisible(false)
+                                }
 
-                        }}
-                    />
-                    {isError ? 
-                        <p style={{marginTop: "revert", margin: 0, color: "red", paddingLeft: 5, alignSelf: "center"}}>
-                            {errorMessage}
-                        </p>
-                        :
-                        null
-                    }
-                </div>
+                            }}
+                        />
+                    </div>
 
-            )}
-            {!inputVisible && (
-                <Tag style={{marginTop: 5, display: "flex", justifyContent: "center", alignItems: "center", minHeight: 40}} onClick={() => setInputVisible(true)} className="site-tag-plus">
-                    <PlusOutlined /> New Tag
-                </Tag>
-            )}
+                )}
+                {!inputVisible && (
+                    <Tag style={{marginTop: 5, display: "flex", justifyContent: "center", alignItems: "center", minHeight: 40}} onClick={() => setInputVisible(true)} className="site-tag-plus">
+                        <PlusOutlined /> New Tag
+                    </Tag>
+                )}
+            </Tooltip>
+
         </div>
     )
 
@@ -133,19 +144,27 @@ export const SkillsDisplay = ({allSkills, JGProjects, prevWork, sectionDataTitle
         if(containsItem("")) removeItem("")
         const tagFromSection = section[sectionDataTitle][arrayTitle].map(item => {
             return (
-                <Tag style={{marginTop: 5}} onClick={() => removeItem(item[fieldName])}>
-                    <div style={{display: "flex", flexDirection : "row", alignItems: "center" }}>
-                        <p style={{marginTop: "revert", paddingRight : 10}}>{item[fieldName]}</p>
-                        <DeleteOutlined style={{ fontSize: '14px'}}  />
-                    </div>
+                <Tooltip >
+                    <Tag style={{marginTop: 5}} onClick={() => removeItem(item[fieldName])}>
+                        <div style={{display: "flex", flexDirection : "row", alignItems: "center" }}>
+                            <p style={{marginTop: "revert", paddingRight : 10}}>{item[fieldName]}</p>
+                            <DeleteOutlined style={{ fontSize: '14px'}}  />
+                        </div>
 
-                </Tag>
+                    </Tag>
+                </Tooltip>
+
             )
         })
 
         return tagFromSection
 
     }
+
+    const getLength = () => {
+        const arrayOfItems = section[sectionDataTitle][arrayTitle];
+        return arrayOfItems.length;
+      };
 
     const containsItem = (value) => {
         return typeof section[sectionDataTitle][arrayTitle].find(item => item[fieldName] == value) != "undefined"
@@ -355,8 +374,10 @@ export const SkillsDisplay = ({allSkills, JGProjects, prevWork, sectionDataTitle
 
     return (
         <div >
+
+            {getLength() > arrayMaxLength ? <p style={{color: "red"}}>{`You have exceeds the reccomended number of skills. ${getLength()}/${arrayMaxLength}.`}</p> : <p>{`${getLength()}/${arrayMaxLength}`}</p>}
             <div style={{display: "flex", flexDirection: "row", flexWrap: 'wrap', paddingBottom: 10, maxHeight: 120, overflow: 'scroll'}}>
-                <InputTag inputValue={inputValue} setInputValue={setInputValue} inputVisible={inputVisible} 
+                <InputTag inputValue={inputValue} setInputValue={setInputValue} inputVisible={inputVisible} maxLength={fieldNameMaxLength} 
                     setInputVisible={setInputVisible} addItem={(value) => addItem(value, true)} hasSkill={containsItem(inputValue)} />
                 {renderTags()}
 
