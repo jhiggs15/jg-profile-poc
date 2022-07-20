@@ -10,14 +10,17 @@ export const Section = ({title, schema}) => {
    const [section, setSection] = useRecoilState(sectionStateHook)
  
    const createSectionFields = () => {
-       return Object.keys(schema).map((fieldName) => {
-         const field = schema[fieldName];
-         if (Array.isArray(field))
-           return <ArrayField sectionTitle={title} title={fieldName} templateItem={field[0]} />;
-         else {
-           return <Field defaultValue={inputData[fieldName] ?? ""} sectionTitle={title} title={fieldName} />;
-         }
-       });
+    const sectionDataTitle = Object.keys(schema)[0]
+    const sectionSchema = schema[sectionDataTitle].schema
+    return Object.keys(sectionSchema).map(fieldName => {
+      const field = sectionSchema[fieldName];
+      console.log(field)
+      if (Array.isArray(field)) return (<h1>Need to reimplement array field in section</h1>)
+        // return <ArrayField sectionTitle={title} title={fieldName} templateItem={field[0]} />;
+      else {
+        return <Field characterLimit={field.maxLength} key={sectionDataTitle+fieldName} title={field.title} sectionDataTitle={sectionDataTitle} fieldName={fieldName} />;
+      }
+    });
    };
  
    return(

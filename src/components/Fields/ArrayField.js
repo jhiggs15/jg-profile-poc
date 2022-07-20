@@ -98,7 +98,7 @@ const ArrayItem = ({ sectionTitle, title, index, fields }) => {
 };
 
 // array fields contain array items which could have multiple attributes and this multiple ArraySubItems
-export const ArrayField = ({ sectionTitle, title, templateItem }) => {
+export const ArrayField = ({ sectionTitle, title, templateItem, characterLimit}) => {
   const newTitle = `Array Field ${title}`;
   const [section, setSection] = useRecoilState(sectionStateHook);
 

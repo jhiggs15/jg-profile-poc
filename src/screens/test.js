@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Field } from '../components/Fields/Field';
 import { ArrayField } from '../components/Fields/ArrayField';
-import { templateStructure } from '../templateStructure';
+import { newTemplateStrucutre, templateStructure } from '../templateStructure';
 import { useRecoilValue } from 'recoil';
 import { draggedTreeJSONNodeHook, sectionStateHook, treeHook,inputDataHook } from '../util/Atoms';
 import { Section } from '../components/Sections/Section';
@@ -48,33 +48,14 @@ const findTreeItem = (treeLeft, pathArray) => {
 }
  
 const createSections = (templateStructure, inputData) => {
- return Object.keys(templateStructure).map((sectionTitle) => {
-   const section = templateStructure[sectionTitle];
+ return templateStructure.map(section => {
    // create sections here
    switch (section.type) {
      case 'Section':
-      return
+      // return
        return (
-         <Section title={sectionTitle} schema={section.schema} />
+         <Section title={section.sectionTitle} schema={section.schema} />
        )
-     case 'ShowData':
-      return
-      return <ShowDataSection title={sectionTitle} schema={section.schema} pathsToDisplay={section.options.show} />
-     case 'Transfer':
-      return
-      return <TransferSection title={sectionTitle} schema={section.schema} transfer={section.options.transfer} />
-     case 'Skills':
-      const skillData = section.options.skillData
-      const allSkills = pathToJSON(skillData.allSkills.path, inputData)
-      const JGSkills = pathToJSON(skillData.JGProjectSkills.path, inputData)
-      const prevWorkSkills = pathToJSON(skillData.prevWorkSkills.path, inputData)
-      return (
-        <SkillsDisplay allSkills={allSkills} sectionItemKey={section.options.schemaItemKey} sectionTitle={sectionTitle} title={Object.keys(section.schema)[0]} 
-          JGProjects={{companyName: skillData.JGProjectSkills.companyName, skills: skillData.JGProjectSkills.skills, data: JGSkills}} 
-          prevWork={{companyName: skillData.prevWorkSkills.companyName, skills: skillData.prevWorkSkills.skills, data: prevWorkSkills}} 
-        />
-      )
-
      default:
    }
  });
@@ -85,13 +66,9 @@ export const Test = () => {
  const inputData = useRecoilValue(inputDataHook)
  const tree = useRecoilValue(treeHook)
  const draggedNode = useRecoilValue(draggedTreeJSONNodeHook)
- const item = [["Hello1a", "Hello1b"], ["Hello2a", "Hello2b"], ["Hello3a", "Hello3b"],]
  return <>
-  <List bordered dataSource={item} itemLayout="vertical"
-    renderItem={item2=> <List bordered dataSource={item2} renderItem={item3 => <List.Item> {item3} </List.Item>}  > </List>}/>
-
-   {/* {createSections(templateStructure, inputData)} */}
-   {/* {JSON.stringify(section)} */}
+ {JSON.stringify(section)}
+  {createSections(newTemplateStrucutre)}
 
  </>;
 };

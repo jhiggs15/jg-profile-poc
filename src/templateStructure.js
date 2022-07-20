@@ -28,6 +28,98 @@ export const autofillTemplate = (inputData) => {
  return newSection
  
 }
+
+export const newTemplateStrucutre = [
+  {
+    sectionTitle: "General Information",
+    type: "Section",
+    schema: {
+      userinfo: {
+        type: "Object",
+        schema: {
+          name: {
+            title: "Name",
+            autofill: ".name",
+            maxLength: 15
+          },
+          title: {
+            title: "Title",
+            autofill: ".tense_title",
+            maxLength: 30
+          },
+          funfact: {
+            title: "Fun Fact",
+            autofill: ".biography",
+            maxLength: 50
+          },
+          school: {
+            title: "School",
+            autofill: ".attendedConnection.educationName",
+            maxLength: 35
+          },
+          degree: {
+            title: "Degree",
+            autofill: ".attendedConnection.degreeName",
+            maxLength: 40
+          },
+        }
+      }
+
+    }
+  },
+  {
+    sectionTitle: "Experience",
+    type: "ShowData",
+    options: {
+      ShowData: [".previousWork", ".nonJGProjects"]
+
+    },
+    schema: {
+      experienceList : {
+        type: "Array",
+        maxLength: 10,
+        schema: {
+          experienceItem: {
+            maxLength: 20
+          }
+        }
+      }
+    }
+  },
+  {
+    sectionTitle: 'Skills',
+    type: "SkillsSection",
+    options: {
+      SkillsSection: {
+        allSkills: {
+          path: ".skillsConnection"
+        },
+        JGProjectSkills: {
+          path: ".nonJGProjects",
+          companyName: "projectFullName",
+          skills: "usesSkillConnection"
+        },
+        prevWorkSkills: {
+          path: ".previousWork",
+          companyName: "companyName", // indicates where the attribute of the company name in the object, in case it needs to chang
+          skills: "usesSkillConnection" // indicates where the list of skills are in the object, in case it needs to chang
+        }
+      }
+
+    },
+    schema: {
+      skillList : {
+        type: "Array",
+        maxLength: 10,
+        schema: {
+          skillName: {
+            length: 20
+          }
+        }
+      }
+    }
+  }
+]
  
 export const templateStructure = {
  userinfo: {
