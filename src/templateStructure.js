@@ -39,26 +39,31 @@ export const newTemplateStrucutre = [
         schema: {
           name: {
             title: "Name",
+            type: "Field",
             autofill: ".name",
             maxLength: 15
           },
           title: {
             title: "Title",
+            type: "Field",
             autofill: ".tense_title",
             maxLength: 30
           },
           funfact: {
             title: "Fun Fact",
+            type: "Field",
             autofill: ".biography",
             maxLength: 50
           },
           school: {
             title: "School",
+            type: "Field",
             autofill: ".attendedConnection.educationName",
             maxLength: 35
           },
           degree: {
             title: "Degree",
+            type: "Field",
             autofill: ".attendedConnection.degreeName",
             maxLength: 40
           },
@@ -75,22 +80,30 @@ export const newTemplateStrucutre = [
 
     },
     schema: {
-      experienceList : {
-        type: "Array",
-        maxLength: 10,
+      experience: {
+        type: "Object",
         schema: {
-          experienceItem: {
-            maxLength: 20
+          experienceList : {
+            type: "Array",
+            maxLength: 10,
+            schema: {
+              experienceItem: {
+                type: "Field",
+                maxLength: 20
+              }
+            }
           }
         }
+
       }
+
     }
   },
   {
     sectionTitle: 'Skills',
-    type: "SkillsSection",
+    type: "SkillSection",
     options: {
-      SkillsSection: {
+      SkillSection: {
         allSkills: {
           path: ".skillsConnection"
         },
@@ -108,15 +121,23 @@ export const newTemplateStrucutre = [
 
     },
     schema: {
-      skillList : {
-        type: "Array",
-        maxLength: 10,
+      skills: {
+        type: "Object",
         schema: {
-          skillName: {
-            length: 20
-          }
+          skillList : {
+            type: "Array",
+            maxLength: 10,
+            schema: {
+              skillName: {
+                maxLength: 20
+              }
+            }
+          },
         }
+
+
       }
+
     }
   }
 ]

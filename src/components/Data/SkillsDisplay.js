@@ -109,7 +109,7 @@ const InputTag = ({inputValue, setInputValue, setInputVisible, inputVisible, add
 }
 
 
-export const SkillsDisplay = ({allSkills, JGProjects, prevWork, sectionItemKey, sectionTitle, title}) => {
+export const SkillsDisplay = ({allSkills, JGProjects, prevWork, sectionDataTitle, arrayTitle, fieldName, arrayMaxLength, fieldNameMaxLength }) => {
     const [section, setSection] = useRecoilState(sectionStateHook);
     const [inputValue, setInputValue] = useState([])
     const [inputVisible, setInputVisible] = useState(false);
@@ -129,14 +129,13 @@ export const SkillsDisplay = ({allSkills, JGProjects, prevWork, sectionItemKey, 
         setSearchText('');
       };
 
-
-    const renderTags = () => {
+      const renderTags = () => {
         if(containsItem("")) removeItem("")
-        const tagFromSection = section[sectionTitle][title].map(item => {
+        const tagFromSection = section[sectionDataTitle][arrayTitle].map(item => {
             return (
-                <Tag style={{marginTop: 5}} onClick={() => removeItem(item[sectionItemKey])}>
+                <Tag style={{marginTop: 5}} onClick={() => removeItem(item[fieldName])}>
                     <div style={{display: "flex", flexDirection : "row", alignItems: "center" }}>
-                        <p style={{marginTop: "revert", paddingRight : 10}}>{item[sectionItemKey]}</p>
+                        <p style={{marginTop: "revert", paddingRight : 10}}>{item[fieldName]}</p>
                         <DeleteOutlined style={{ fontSize: '14px'}}  />
                     </div>
 
@@ -148,49 +147,46 @@ export const SkillsDisplay = ({allSkills, JGProjects, prevWork, sectionItemKey, 
 
     }
 
-
     const containsItem = (value) => {
-        return typeof section[sectionTitle][title].find(item => item[sectionItemKey] == value) != "undefined"
+        return typeof section[sectionDataTitle][arrayTitle].find(item => item[fieldName] == value) != "undefined"
     }
-
 
     const removeItem = (value) => {
         const newSection = { ...section };
-        const newSectionItem = { ...newSection[sectionTitle] };
+        const newSectionItem = { ...newSection[sectionDataTitle] };
         const newCustomTags = [...customTags].filter((item) => item != value)
-        const newArray = [...newSectionItem[title]].filter((item) => item[sectionItemKey] != value)
-        newSectionItem[title] = newArray;
-        newSection[sectionTitle] = newSectionItem;
+        const newArray = [...newSectionItem[arrayTitle]].filter((item) => item[fieldName] != value)
+        newSectionItem[arrayTitle] = newArray;
+        newSection[sectionDataTitle] = newSectionItem;
         setCustomTags(newCustomTags)
         setSection(newSection)
     }
-
     const addItem = (value, isCustomTag) => {
         const newSection = { ...section };
-        const newSectionItem = { ...newSection[sectionTitle] };
+        const newSectionItem = { ...newSection[sectionDataTitle] };
         if(isCustomTag) {
             const newTags = customTags
             newTags.push(value)
             setCustomTags(newTags)
         }
-        const newArray = [...newSectionItem[title]];
-        newArray.push({[sectionItemKey] : value})
-        newSectionItem[title] = newArray;
-        newSection[sectionTitle] = newSectionItem;
+        const newArray = [...newSectionItem[arrayTitle]];
+        newArray.push({[fieldName] : value})
+        newSectionItem[arrayTitle] = newArray;
+        newSection[sectionDataTitle] = newSectionItem;
 
         setSection(newSection);
     };
     
     const addItems = (values) => {
         const newSection = { ...section };
-        const newSectionItem = { ...newSection[sectionTitle] };
-        const customTagsAsItems = customTags.map(item => {return {[sectionItemKey] : item}}) 
+        const newSectionItem = { ...newSection[sectionDataTitle] };
+        const customTagsAsItems = customTags.map(item => {return {[fieldName] : item}}) 
         const newArray = [...customTagsAsItems];
         values.forEach((value) => {
-            newArray.push({[sectionItemKey] : value})
+            newArray.push({[fieldName] : value})
         })
-        newSectionItem[title] = newArray;
-        newSection[sectionTitle] = newSectionItem;
+        newSectionItem[arrayTitle] = newArray;
+        newSection[sectionDataTitle] = newSectionItem;
 
         setSection(newSection);
     }
@@ -352,8 +348,8 @@ export const SkillsDisplay = ({allSkills, JGProjects, prevWork, sectionItemKey, 
         type: 'checkbox',
         onChange: handleChange,
         getCheckboxProps: (record) => ({ name: record.name }),
-        selectedRowKeys: section[sectionTitle][title].map(item => {
-            return item[sectionItemKey]
+        selectedRowKeys: section[sectionDataTitle][arrayTitle].map(item => {
+            return item[fieldName]
         })
       };
 
@@ -372,5 +368,6 @@ export const SkillsDisplay = ({allSkills, JGProjects, prevWork, sectionItemKey, 
         </div>
     )
 
-
+     
 }
+
