@@ -3,6 +3,7 @@ import { clipboardHook, draggedTreeJSONNodeHook, popupFieldHook, sectionStateHoo
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { Input, Button, message, Tooltip } from 'antd';
 import { isObject } from '../../util/toColumn';
+import { DeleteFilled } from '@ant-design/icons';
 
 // TODO setting state may be able to be simplified
 
@@ -21,6 +22,16 @@ const ArraySubItem = ({ sectionDataTitle, arrayTitle, index, fieldName, characte
       </div>
     )
   }
+
+  const remove = () => {
+    const newSection = { ...section };
+    const newSectionItem = { ...newSection[sectionDataTitle] };
+    const newArray = [...newSectionItem[arrayTitle]].filter((_, itemIndex) => index != itemIndex)
+    console.log(newArray)
+    newSectionItem[arrayTitle] = newArray;
+    newSection[sectionDataTitle] = newSectionItem;
+    setSection(newSection);
+  };
 
   const update = (newValue) => {
     const newSection = { ...section };
@@ -66,17 +77,22 @@ const ArraySubItem = ({ sectionDataTitle, arrayTitle, index, fieldName, characte
    }   
 
   return (
-    <Input.TextArea onContextMenu={rightClick} value={getValue()} onChange={(event) => update(event.target.value)} autoSize={{ minRows: 2, maxRows: 5 }}
-      showCount={{formatter: showCount}} status={status}
-      onDragOver={(event) => { event.stopPropagation(); event.preventDefault();}} 
-      onDrop={(event) => {
-      const keys = Object.keys(draggedTreeJSONNode);
-      // dragged node has one key and the value for that key is not an object
-      if(!isObject(draggedTreeJSONNode)) 
-        update(draggedTreeJSONNode);
-      else setPopupField(createSelf(sectionDataTitle, arrayTitle, index, fieldName, characterLimit));
-      }} 
-    />
+    <div style={{display: "flex", flexDiection : "row", alignItems: "center"}}>
+      <Input.TextArea onContextMenu={rightClick} value={getValue()} onChange={(event) => update(event.target.value)} autoSize={{ minRows: 2, maxRows: 5 }}
+        showCount={{formatter: showCount}} status={status}
+        style={{width : "95%"}}
+        onDragOver={(event) => { event.stopPropagation(); event.preventDefault();}} 
+        onDrop={(event) => {
+        const keys = Object.keys(draggedTreeJSONNode);
+        // dragged node has one key and the value for that key is not an object
+        if(!isObject(draggedTreeJSONNode)) 
+          update(draggedTreeJSONNode);
+        else setPopupField(createSelf(sectionDataTitle, arrayTitle, index, fieldName, characterLimit));
+        }} 
+      />
+      <DeleteFilled onClick={remove} style={{ fontSize: '30px', color: 'red', paddingLeft : 10, paddingBottom: 20 }}  />
+    </div>
+
   )
 };
 
@@ -146,23 +162,13 @@ export const ArrayField = ({ sectionDataTitle, arrayTitle, fieldName, arrayMaxLe
     setSection(newSection);
   };
 
-  const removeItem = () => {
-    const newSection = { ...section };
-    const newSectionItem = { ...newSection[sectionDataTitle] };
-    const newArray = [...newSectionItem[arrayTitle]];
-    newArray.pop(templateItem);
-    newSectionItem[arrayTitle] = newArray;
-    newSection[sectionDataTitle] = newSectionItem;
-    setSection(newSection);
-  };
-
   return (
     <div>
       <p style={{color: getLength() > arrayMaxLength ? "red": "black"}}>{`${getLength()}/${arrayMaxLength}`}</p>
       <Button onClick={addItem}>Create Item</Button>
-      {getLength() > 0 ? (
+      {/* {getLength() > 0 ? (
         <Button onClick={removeItem}>Remove Last</Button>
-      ) : null}
+      ) : null} */}
       {renderArrayItems()}
 
 

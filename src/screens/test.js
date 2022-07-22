@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Field } from '../components/Fields/Field';
 import { ArrayField } from '../components/Fields/ArrayField';
-import { autofillNewTemplate, newTemplateStrucutre, templateStructure } from '../templateStructure';
 import { useRecoilValue } from 'recoil';
 import { draggedTreeJSONNodeHook, sectionStateHook, treeHook,inputDataHook } from '../util/Atoms';
 import { Section } from '../components/Sections/Section';
@@ -11,6 +10,7 @@ import { TransferSection } from '../components/Sections/TransferSection';
 import { pathToJSON } from '../util/toJSON';
 import { List } from 'antd';
 import { SkillSection } from '../components/Sections/SkillSection';
+import { templateStrucutre } from '../templateStructure';
  
 
 
@@ -52,10 +52,12 @@ const createSections = (templateStructure) => {
  return templateStructure.map(section => {
    switch (section.type) {
      case 'Section':
+      return
        return <Section title={section.sectionTitle} schema={section.schema} />
     case 'ShowData':
       return <ShowDataSection title={section.sectionTitle} schema={section.schema} pathsToDisplay={section.options.ShowData} />
     case 'SkillSection':
+      return
       return <SkillSection title={section.sectionTitle} options={section.options.SkillSection} schema={section.schema} />
      default:
     
@@ -71,6 +73,7 @@ export const Test = () => {
 
  return <>
  {JSON.stringify(section)}
+ {createSections(templateStrucutre)}
 
  </>;
 };
